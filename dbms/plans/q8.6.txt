@@ -1,0 +1,101 @@
+-- Query 8.6: Unread count per conversation (badge numbers)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 20.336 ms
+HashAggregate  (cost=5114.66..5197.14 rows=8248 width=29) (actual time=20.210..20.265 rows=550.00 loops=1)
+  Group Key: m.conversation_id, c.title
+  Batches: 1  Memory Usage: 313kB
+  Buffers: shared hit=14482 dirtied=9
+  ->  Hash Join  (cost=1148.53..5052.80 rows=8248 width=21) (actual time=11.213..19.485 rows=7855.00 loops=1)
+        Hash Cond: (m.conversation_id = c.conversation_id)
+        Buffers: shared hit=14482 dirtied=9
+        ->  Hash Join  (cost=1073.91..4956.48 rows=8248 width=8) (actual time=11.031..18.728 rows=7855.00 loops=1)
+              Hash Cond: (m.message_id = r.message_id)
+              Buffers: shared hit=14449 dirtied=9
+              ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=16) (actual time=0.003..8.948 rows=151935.00 loops=1)
+                    Filter: (deleted_at IS NULL)
+                    Rows Removed by Filter: 3065
+                    Buffers: shared hit=1934 dirtied=9
+              ->  Hash  (cost=968.66..968.66 rows=8420 width=8) (actual time=4.163..4.163 rows=8010.00 loops=1)
+                    Buckets: 16384  Batches: 1  Memory Usage: 441kB
+                    Buffers: shared hit=12515
+                    ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..968.66 rows=8420 width=8) (actual time=0.018..3.790 rows=8010.00 loops=1)
+                          Index Cond: (recipient_id = 1267)
+                          Heap Fetches: 15963
+                          Index Searches: 1
+                          Buffers: shared hit=12515
+        ->  Hash  (cost=51.50..51.50 rows=1850 width=21) (actual time=0.178..0.178 rows=1850.00 loops=1)
+              Buckets: 2048  Batches: 1  Memory Usage: 98kB
+              Buffers: shared hit=33
+              ->  Seq Scan on conversations c  (cost=0.00..51.50 rows=1850 width=21) (actual time=0.018..0.097 rows=1850.00 loops=1)
+                    Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=391
+Planning Time: 1.137 ms
+Execution Time: 20.336 ms
+
+-- Run 2: 17.126 ms
+HashAggregate  (cost=5114.66..5197.14 rows=8248 width=29) (actual time=17.009..17.062 rows=550.00 loops=1)
+  Group Key: m.conversation_id, c.title
+  Batches: 1  Memory Usage: 313kB
+  Buffers: shared hit=6569
+  ->  Hash Join  (cost=1148.53..5052.80 rows=8248 width=21) (actual time=8.806..16.319 rows=7855.00 loops=1)
+        Hash Cond: (m.conversation_id = c.conversation_id)
+        Buffers: shared hit=6569
+        ->  Hash Join  (cost=1073.91..4956.48 rows=8248 width=8) (actual time=8.628..15.567 rows=7855.00 loops=1)
+              Hash Cond: (m.message_id = r.message_id)
+              Buffers: shared hit=6536
+              ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=16) (actual time=0.002..7.801 rows=151935.00 loops=1)
+                    Filter: (deleted_at IS NULL)
+                    Rows Removed by Filter: 3065
+                    Buffers: shared hit=1934
+              ->  Hash  (cost=968.66..968.66 rows=8420 width=8) (actual time=2.586..2.586 rows=8010.00 loops=1)
+                    Buckets: 16384  Batches: 1  Memory Usage: 441kB
+                    Buffers: shared hit=4602
+                    ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..968.66 rows=8420 width=8) (actual time=0.012..2.244 rows=8010.00 loops=1)
+                          Index Cond: (recipient_id = 1267)
+                          Heap Fetches: 8911
+                          Index Searches: 1
+                          Buffers: shared hit=4602
+        ->  Hash  (cost=51.50..51.50 rows=1850 width=21) (actual time=0.175..0.175 rows=1850.00 loops=1)
+              Buckets: 2048  Batches: 1  Memory Usage: 98kB
+              Buffers: shared hit=33
+              ->  Seq Scan on conversations c  (cost=0.00..51.50 rows=1850 width=21) (actual time=0.016..0.091 rows=1850.00 loops=1)
+                    Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=391
+Planning Time: 0.752 ms
+Execution Time: 17.126 ms
+
+-- Run 3: 17.334 ms
+HashAggregate  (cost=5114.66..5197.14 rows=8248 width=29) (actual time=17.218..17.272 rows=550.00 loops=1)
+  Group Key: m.conversation_id, c.title
+  Batches: 1  Memory Usage: 313kB
+  Buffers: shared hit=6569
+  ->  Hash Join  (cost=1148.53..5052.80 rows=8248 width=21) (actual time=8.882..16.525 rows=7855.00 loops=1)
+        Hash Cond: (m.conversation_id = c.conversation_id)
+        Buffers: shared hit=6569
+        ->  Hash Join  (cost=1073.91..4956.48 rows=8248 width=8) (actual time=8.711..15.788 rows=7855.00 loops=1)
+              Hash Cond: (m.message_id = r.message_id)
+              Buffers: shared hit=6536
+              ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=16) (actual time=0.002..7.809 rows=151935.00 loops=1)
+                    Filter: (deleted_at IS NULL)
+                    Rows Removed by Filter: 3065
+                    Buffers: shared hit=1934
+              ->  Hash  (cost=968.66..968.66 rows=8420 width=8) (actual time=2.755..2.755 rows=8010.00 loops=1)
+                    Buckets: 16384  Batches: 1  Memory Usage: 441kB
+                    Buffers: shared hit=4602
+                    ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..968.66 rows=8420 width=8) (actual time=0.015..2.428 rows=8010.00 loops=1)
+                          Index Cond: (recipient_id = 1267)
+                          Heap Fetches: 8911
+                          Index Searches: 1
+                          Buffers: shared hit=4602
+        ->  Hash  (cost=51.50..51.50 rows=1850 width=21) (actual time=0.167..0.167 rows=1850.00 loops=1)
+              Buckets: 2048  Batches: 1  Memory Usage: 98kB
+              Buffers: shared hit=33
+              ->  Seq Scan on conversations c  (cost=0.00..51.50 rows=1850 width=21) (actual time=0.015..0.091 rows=1850.00 loops=1)
+                    Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=391
+Planning Time: 0.765 ms
+Execution Time: 17.334 ms

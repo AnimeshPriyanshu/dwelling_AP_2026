@@ -1,0 +1,125 @@
+-- Query 7.10: Full-text search across ALL my conversations
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 7.169 ms
+Limit  (cost=651.94..654.30 rows=9 width=77) (actual time=7.102..7.139 rows=20.00 loops=1)
+  Buffers: shared hit=402
+  ->  Result  (cost=651.94..654.30 rows=9 width=77) (actual time=7.101..7.138 rows=20.00 loops=1)
+        Buffers: shared hit=402
+        ->  Sort  (cost=651.94..651.96 rows=9 width=77) (actual time=7.080..7.082 rows=20.00 loops=1)
+              Sort Key: m.created_at DESC
+              Sort Method: top-N heapsort  Memory: 29kB
+              Buffers: shared hit=402
+              ->  Nested Loop  (cost=26.68..651.80 rows=9 width=77) (actual time=0.438..7.064 rows=52.00 loops=1)
+                    Buffers: shared hit=399
+                    ->  Nested Loop  (cost=26.40..646.96 rows=9 width=72) (actual time=0.436..7.032 rows=52.00 loops=1)
+                          Buffers: shared hit=243
+                          ->  Index Only Scan using idx_conv_members_user on conversation_members cm  (cost=0.28..8.65 rows=21 width=8) (actual time=0.009..0.012 rows=21.00 loops=1)
+                                Index Cond: (user_id = 1)
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=6
+                          ->  Bitmap Heap Scan on messages m  (cost=26.12..30.39 rows=1 width=64) (actual time=0.333..0.333 rows=2.48 loops=21)
+                                Recheck Cond: ((conversation_id = cm.conversation_id) AND (to_tsvector('english'::regconfig, content) @@ '''dinner'''::tsquery) AND (deleted_at IS NULL))
+                                Heap Blocks: exact=23
+                                Buffers: shared hit=237
+                                ->  BitmapAnd  (cost=26.12..26.12 rows=1 width=0) (actual time=0.331..0.331 rows=0.00 loops=21)
+                                      Buffers: shared hit=214
+                                      ->  Bitmap Index Scan on idx_messages_conv_all  (cost=0.00..5.05 rows=84 width=0) (actual time=0.003..0.003 rows=60.00 loops=21)
+                                            Index Cond: (conversation_id = cm.conversation_id)
+                                            Index Searches: 21
+                                            Buffers: shared hit=67
+                                      ->  Bitmap Index Scan on idx_messages_content_fts  (cost=0.00..20.63 rows=759 width=0) (actual time=0.328..0.328 rows=10068.00 loops=21)
+                                            Index Cond: (to_tsvector('english'::regconfig, content) @@ '''dinner'''::tsquery)
+                                            Index Searches: 21
+                                            Buffers: shared hit=147
+                    ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..0.54 rows=1 width=21) (actual time=0.000..0.000 rows=1.00 loops=52)
+                          Index Cond: (conversation_id = m.conversation_id)
+                          Index Searches: 52
+                          Buffers: shared hit=156
+Planning:
+  Buffers: shared hit=482
+Planning Time: 1.355 ms
+Execution Time: 7.169 ms
+
+-- Run 2: 7.146 ms
+Limit  (cost=651.94..654.30 rows=9 width=77) (actual time=7.085..7.120 rows=20.00 loops=1)
+  Buffers: shared hit=402
+  ->  Result  (cost=651.94..654.30 rows=9 width=77) (actual time=7.085..7.118 rows=20.00 loops=1)
+        Buffers: shared hit=402
+        ->  Sort  (cost=651.94..651.96 rows=9 width=77) (actual time=7.071..7.072 rows=20.00 loops=1)
+              Sort Key: m.created_at DESC
+              Sort Method: top-N heapsort  Memory: 29kB
+              Buffers: shared hit=402
+              ->  Nested Loop  (cost=26.68..651.80 rows=9 width=77) (actual time=0.398..7.055 rows=52.00 loops=1)
+                    Buffers: shared hit=399
+                    ->  Nested Loop  (cost=26.40..646.96 rows=9 width=72) (actual time=0.397..7.021 rows=52.00 loops=1)
+                          Buffers: shared hit=243
+                          ->  Index Only Scan using idx_conv_members_user on conversation_members cm  (cost=0.28..8.65 rows=21 width=8) (actual time=0.007..0.010 rows=21.00 loops=1)
+                                Index Cond: (user_id = 1)
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=6
+                          ->  Bitmap Heap Scan on messages m  (cost=26.12..30.39 rows=1 width=64) (actual time=0.332..0.333 rows=2.48 loops=21)
+                                Recheck Cond: ((conversation_id = cm.conversation_id) AND (to_tsvector('english'::regconfig, content) @@ '''dinner'''::tsquery) AND (deleted_at IS NULL))
+                                Heap Blocks: exact=23
+                                Buffers: shared hit=237
+                                ->  BitmapAnd  (cost=26.12..26.12 rows=1 width=0) (actual time=0.331..0.331 rows=0.00 loops=21)
+                                      Buffers: shared hit=214
+                                      ->  Bitmap Index Scan on idx_messages_conv_all  (cost=0.00..5.05 rows=84 width=0) (actual time=0.002..0.002 rows=60.00 loops=21)
+                                            Index Cond: (conversation_id = cm.conversation_id)
+                                            Index Searches: 21
+                                            Buffers: shared hit=67
+                                      ->  Bitmap Index Scan on idx_messages_content_fts  (cost=0.00..20.63 rows=759 width=0) (actual time=0.328..0.328 rows=10068.00 loops=21)
+                                            Index Cond: (to_tsvector('english'::regconfig, content) @@ '''dinner'''::tsquery)
+                                            Index Searches: 21
+                                            Buffers: shared hit=147
+                    ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..0.54 rows=1 width=21) (actual time=0.000..0.000 rows=1.00 loops=52)
+                          Index Cond: (conversation_id = m.conversation_id)
+                          Index Searches: 52
+                          Buffers: shared hit=156
+Planning:
+  Buffers: shared hit=482
+Planning Time: 1.381 ms
+Execution Time: 7.146 ms
+
+-- Run 3: 9.208 ms
+Limit  (cost=651.94..654.30 rows=9 width=77) (actual time=9.098..9.136 rows=20.00 loops=1)
+  Buffers: shared hit=402
+  ->  Result  (cost=651.94..654.30 rows=9 width=77) (actual time=9.097..9.135 rows=20.00 loops=1)
+        Buffers: shared hit=402
+        ->  Sort  (cost=651.94..651.96 rows=9 width=77) (actual time=9.076..9.078 rows=20.00 loops=1)
+              Sort Key: m.created_at DESC
+              Sort Method: top-N heapsort  Memory: 29kB
+              Buffers: shared hit=402
+              ->  Nested Loop  (cost=26.68..651.80 rows=9 width=77) (actual time=0.454..8.995 rows=52.00 loops=1)
+                    Buffers: shared hit=399
+                    ->  Nested Loop  (cost=26.40..646.96 rows=9 width=72) (actual time=0.450..8.942 rows=52.00 loops=1)
+                          Buffers: shared hit=243
+                          ->  Index Only Scan using idx_conv_members_user on conversation_members cm  (cost=0.28..8.65 rows=21 width=8) (actual time=0.015..0.020 rows=21.00 loops=1)
+                                Index Cond: (user_id = 1)
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=6
+                          ->  Bitmap Heap Scan on messages m  (cost=26.12..30.39 rows=1 width=64) (actual time=0.422..0.423 rows=2.48 loops=21)
+                                Recheck Cond: ((conversation_id = cm.conversation_id) AND (to_tsvector('english'::regconfig, content) @@ '''dinner'''::tsquery) AND (deleted_at IS NULL))
+                                Heap Blocks: exact=23
+                                Buffers: shared hit=237
+                                ->  BitmapAnd  (cost=26.12..26.12 rows=1 width=0) (actual time=0.420..0.420 rows=0.00 loops=21)
+                                      Buffers: shared hit=214
+                                      ->  Bitmap Index Scan on idx_messages_conv_all  (cost=0.00..5.05 rows=84 width=0) (actual time=0.004..0.004 rows=60.00 loops=21)
+                                            Index Cond: (conversation_id = cm.conversation_id)
+                                            Index Searches: 21
+                                            Buffers: shared hit=67
+                                      ->  Bitmap Index Scan on idx_messages_content_fts  (cost=0.00..20.63 rows=759 width=0) (actual time=0.416..0.416 rows=10068.00 loops=21)
+                                            Index Cond: (to_tsvector('english'::regconfig, content) @@ '''dinner'''::tsquery)
+                                            Index Searches: 21
+                                            Buffers: shared hit=147
+                    ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..0.54 rows=1 width=21) (actual time=0.001..0.001 rows=1.00 loops=52)
+                          Index Cond: (conversation_id = m.conversation_id)
+                          Index Searches: 52
+                          Buffers: shared hit=156
+Planning:
+  Buffers: shared hit=482
+Planning Time: 4.336 ms
+Execution Time: 9.208 ms

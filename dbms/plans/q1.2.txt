@@ -1,0 +1,32 @@
+-- Query 1.2: Login by email  (uses: uq_users_email_lower)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.015 ms
+Index Scan using uq_users_email_lower on users  (cost=0.28..8.30 rows=1 width=64) (actual time=0.005..0.005 rows=1.00 loops=1)
+  Index Cond: (lower((email)::text) = 'neha.rao1@mail.test'::text)
+  Index Searches: 1
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.320 ms
+Execution Time: 0.015 ms
+
+-- Run 2: 0.017 ms
+Index Scan using uq_users_email_lower on users  (cost=0.28..8.30 rows=1 width=64) (actual time=0.006..0.007 rows=1.00 loops=1)
+  Index Cond: (lower((email)::text) = 'neha.rao1@mail.test'::text)
+  Index Searches: 1
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.506 ms
+Execution Time: 0.017 ms
+
+-- Run 3: 0.015 ms
+Index Scan using uq_users_email_lower on users  (cost=0.28..8.30 rows=1 width=64) (actual time=0.005..0.005 rows=1.00 loops=1)
+  Index Cond: (lower((email)::text) = 'neha.rao1@mail.test'::text)
+  Index Searches: 1
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.299 ms
+Execution Time: 0.015 ms

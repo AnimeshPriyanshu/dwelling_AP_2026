@@ -1,0 +1,50 @@
+-- Query 6.8: Owners / admins of a conversation  (uses: idx_conv_members_admins)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.031 ms
+Nested Loop  (cost=0.56..36.74 rows=3 width=29) (actual time=0.014..0.019 rows=2.00 loops=1)
+  Buffers: shared hit=16
+  ->  Index Scan using idx_conv_members_admins on conversation_members m  (cost=0.28..11.84 rows=3 width=14) (actual time=0.010..0.011 rows=2.00 loops=1)
+        Index Cond: (conversation_id = 1301)
+        Index Searches: 1
+        Buffers: shared hit=10
+  ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=23) (actual time=0.004..0.004 rows=1.00 loops=2)
+        Index Cond: (user_id = m.user_id)
+        Index Searches: 2
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=371
+Planning Time: 0.594 ms
+Execution Time: 0.031 ms
+
+-- Run 2: 0.027 ms
+Nested Loop  (cost=0.56..36.74 rows=3 width=29) (actual time=0.012..0.015 rows=2.00 loops=1)
+  Buffers: shared hit=12
+  ->  Index Scan using idx_conv_members_admins on conversation_members m  (cost=0.28..11.84 rows=3 width=14) (actual time=0.007..0.008 rows=2.00 loops=1)
+        Index Cond: (conversation_id = 1301)
+        Index Searches: 1
+        Buffers: shared hit=6
+  ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=23) (actual time=0.003..0.003 rows=1.00 loops=2)
+        Index Cond: (user_id = m.user_id)
+        Index Searches: 2
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=371
+Planning Time: 0.577 ms
+Execution Time: 0.027 ms
+
+-- Run 3: 0.027 ms
+Nested Loop  (cost=0.56..36.74 rows=3 width=29) (actual time=0.012..0.016 rows=2.00 loops=1)
+  Buffers: shared hit=12
+  ->  Index Scan using idx_conv_members_admins on conversation_members m  (cost=0.28..11.84 rows=3 width=14) (actual time=0.008..0.008 rows=2.00 loops=1)
+        Index Cond: (conversation_id = 1301)
+        Index Searches: 1
+        Buffers: shared hit=6
+  ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=23) (actual time=0.003..0.003 rows=1.00 loops=2)
+        Index Cond: (user_id = m.user_id)
+        Index Searches: 2
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=371
+Planning Time: 0.570 ms
+Execution Time: 0.027 ms

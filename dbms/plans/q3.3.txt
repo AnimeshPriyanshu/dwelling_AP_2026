@@ -1,0 +1,98 @@
+-- Query 3.3: List my contacts with profile  (uses: contacts PK)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.265 ms
+Sort  (cost=178.65..178.68 rows=12 width=117) (actual time=0.227..0.228 rows=12.00 loops=1)
+  Sort Key: (COALESCE(p.display_name, u.username))
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=91
+  ->  Nested Loop  (cost=42.88..178.44 rows=12 width=117) (actual time=0.048..0.214 rows=12.00 loops=1)
+        Buffers: shared hit=88
+        ->  Hash Right Join  (cost=42.60..102.86 rows=12 width=69) (actual time=0.043..0.183 rows=12.00 loops=1)
+              Hash Cond: (p.user_id = c.contact_id)
+              Buffers: shared hit=52
+              ->  Seq Scan on user_profiles p  (cost=0.00..55.00 rows=2000 width=61) (actual time=0.002..0.083 rows=2000.00 loops=1)
+                    Buffers: shared hit=35
+              ->  Hash  (cost=42.45..42.45 rows=12 width=16) (actual time=0.036..0.036 rows=12.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=17
+                    ->  Bitmap Heap Scan on contacts c  (cost=4.38..42.45 rows=12 width=16) (actual time=0.014..0.031 rows=12.00 loops=1)
+                          Recheck Cond: (user_id = 1)
+                          Heap Blocks: exact=12
+                          Buffers: shared hit=17
+                          ->  Bitmap Index Scan on contacts_pkey  (cost=0.00..4.38 rows=12 width=0) (actual time=0.008..0.008 rows=12.00 loops=1)
+                                Index Cond: (user_id = 1)
+                                Index Searches: 1
+                                Buffers: shared hit=5
+        ->  Index Scan using users_pkey on users u  (cost=0.28..6.30 rows=1 width=24) (actual time=0.002..0.002 rows=1.00 loops=12)
+              Index Cond: (user_id = c.contact_id)
+              Index Searches: 12
+              Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=370
+Planning Time: 0.855 ms
+Execution Time: 0.265 ms
+
+-- Run 2: 0.249 ms
+Sort  (cost=178.65..178.68 rows=12 width=117) (actual time=0.215..0.216 rows=12.00 loops=1)
+  Sort Key: (COALESCE(p.display_name, u.username))
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=91
+  ->  Nested Loop  (cost=42.88..178.44 rows=12 width=117) (actual time=0.043..0.203 rows=12.00 loops=1)
+        Buffers: shared hit=88
+        ->  Hash Right Join  (cost=42.60..102.86 rows=12 width=69) (actual time=0.039..0.175 rows=12.00 loops=1)
+              Hash Cond: (p.user_id = c.contact_id)
+              Buffers: shared hit=52
+              ->  Seq Scan on user_profiles p  (cost=0.00..55.00 rows=2000 width=61) (actual time=0.002..0.077 rows=2000.00 loops=1)
+                    Buffers: shared hit=35
+              ->  Hash  (cost=42.45..42.45 rows=12 width=16) (actual time=0.031..0.031 rows=12.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=17
+                    ->  Bitmap Heap Scan on contacts c  (cost=4.38..42.45 rows=12 width=16) (actual time=0.011..0.028 rows=12.00 loops=1)
+                          Recheck Cond: (user_id = 1)
+                          Heap Blocks: exact=12
+                          Buffers: shared hit=17
+                          ->  Bitmap Index Scan on contacts_pkey  (cost=0.00..4.38 rows=12 width=0) (actual time=0.006..0.006 rows=12.00 loops=1)
+                                Index Cond: (user_id = 1)
+                                Index Searches: 1
+                                Buffers: shared hit=5
+        ->  Index Scan using users_pkey on users u  (cost=0.28..6.30 rows=1 width=24) (actual time=0.002..0.002 rows=1.00 loops=12)
+              Index Cond: (user_id = c.contact_id)
+              Index Searches: 12
+              Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=370
+Planning Time: 0.809 ms
+Execution Time: 0.249 ms
+
+-- Run 3: 0.259 ms
+Sort  (cost=178.65..178.68 rows=12 width=117) (actual time=0.225..0.226 rows=12.00 loops=1)
+  Sort Key: (COALESCE(p.display_name, u.username))
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=91
+  ->  Nested Loop  (cost=42.88..178.44 rows=12 width=117) (actual time=0.042..0.212 rows=12.00 loops=1)
+        Buffers: shared hit=88
+        ->  Hash Right Join  (cost=42.60..102.86 rows=12 width=69) (actual time=0.039..0.183 rows=12.00 loops=1)
+              Hash Cond: (p.user_id = c.contact_id)
+              Buffers: shared hit=52
+              ->  Seq Scan on user_profiles p  (cost=0.00..55.00 rows=2000 width=61) (actual time=0.002..0.085 rows=2000.00 loops=1)
+                    Buffers: shared hit=35
+              ->  Hash  (cost=42.45..42.45 rows=12 width=16) (actual time=0.032..0.032 rows=12.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=17
+                    ->  Bitmap Heap Scan on contacts c  (cost=4.38..42.45 rows=12 width=16) (actual time=0.012..0.028 rows=12.00 loops=1)
+                          Recheck Cond: (user_id = 1)
+                          Heap Blocks: exact=12
+                          Buffers: shared hit=17
+                          ->  Bitmap Index Scan on contacts_pkey  (cost=0.00..4.38 rows=12 width=0) (actual time=0.007..0.007 rows=12.00 loops=1)
+                                Index Cond: (user_id = 1)
+                                Index Searches: 1
+                                Buffers: shared hit=5
+        ->  Index Scan using users_pkey on users u  (cost=0.28..6.30 rows=1 width=24) (actual time=0.002..0.002 rows=1.00 loops=12)
+              Index Cond: (user_id = c.contact_id)
+              Index Searches: 12
+              Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=370
+Planning Time: 0.827 ms
+Execution Time: 0.259 ms

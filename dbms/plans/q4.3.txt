@@ -1,0 +1,80 @@
+-- Query 4.3: List users I blocked
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.050 ms
+Sort  (cost=24.91..24.92 rows=1 width=43) (actual time=0.025..0.025 rows=1.00 loops=1)
+  Sort Key: b.created_at DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=15
+  ->  Nested Loop Left Join  (cost=0.84..24.90 rows=1 width=43) (actual time=0.017..0.017 rows=1.00 loops=1)
+        Buffers: shared hit=12
+        ->  Nested Loop  (cost=0.56..16.60 rows=1 width=31) (actual time=0.012..0.013 rows=1.00 loops=1)
+              Buffers: shared hit=9
+              ->  Index Scan using blocked_contacts_pkey on blocked_contacts b  (cost=0.28..8.29 rows=1 width=16) (actual time=0.009..0.009 rows=1.00 loops=1)
+                    Index Cond: (user_id = 1)
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=23) (actual time=0.002..0.002 rows=1.00 loops=1)
+                    Index Cond: (user_id = b.blocked_contact_id)
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Scan using user_profiles_pkey on user_profiles p  (cost=0.28..8.29 rows=1 width=20) (actual time=0.004..0.004 rows=1.00 loops=1)
+              Index Cond: (user_id = b.blocked_contact_id)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=376
+Planning Time: 0.627 ms
+Execution Time: 0.050 ms
+
+-- Run 2: 0.046 ms
+Sort  (cost=24.91..24.92 rows=1 width=43) (actual time=0.021..0.022 rows=1.00 loops=1)
+  Sort Key: b.created_at DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=15
+  ->  Nested Loop Left Join  (cost=0.84..24.90 rows=1 width=43) (actual time=0.013..0.014 rows=1.00 loops=1)
+        Buffers: shared hit=12
+        ->  Nested Loop  (cost=0.56..16.60 rows=1 width=31) (actual time=0.009..0.009 rows=1.00 loops=1)
+              Buffers: shared hit=9
+              ->  Index Scan using blocked_contacts_pkey on blocked_contacts b  (cost=0.28..8.29 rows=1 width=16) (actual time=0.005..0.006 rows=1.00 loops=1)
+                    Index Cond: (user_id = 1)
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=23) (actual time=0.002..0.002 rows=1.00 loops=1)
+                    Index Cond: (user_id = b.blocked_contact_id)
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Scan using user_profiles_pkey on user_profiles p  (cost=0.28..8.29 rows=1 width=20) (actual time=0.004..0.004 rows=1.00 loops=1)
+              Index Cond: (user_id = b.blocked_contact_id)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=376
+Planning Time: 0.622 ms
+Execution Time: 0.046 ms
+
+-- Run 3: 0.044 ms
+Sort  (cost=24.91..24.92 rows=1 width=43) (actual time=0.020..0.020 rows=1.00 loops=1)
+  Sort Key: b.created_at DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=15
+  ->  Nested Loop Left Join  (cost=0.84..24.90 rows=1 width=43) (actual time=0.013..0.013 rows=1.00 loops=1)
+        Buffers: shared hit=12
+        ->  Nested Loop  (cost=0.56..16.60 rows=1 width=31) (actual time=0.008..0.009 rows=1.00 loops=1)
+              Buffers: shared hit=9
+              ->  Index Scan using blocked_contacts_pkey on blocked_contacts b  (cost=0.28..8.29 rows=1 width=16) (actual time=0.005..0.006 rows=1.00 loops=1)
+                    Index Cond: (user_id = 1)
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=23) (actual time=0.002..0.002 rows=1.00 loops=1)
+                    Index Cond: (user_id = b.blocked_contact_id)
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Scan using user_profiles_pkey on user_profiles p  (cost=0.28..8.29 rows=1 width=20) (actual time=0.004..0.004 rows=1.00 loops=1)
+              Index Cond: (user_id = b.blocked_contact_id)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=376
+Planning Time: 0.609 ms
+Execution Time: 0.044 ms

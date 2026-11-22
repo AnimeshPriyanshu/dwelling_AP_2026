@@ -1,0 +1,41 @@
+-- Query 7.7: Edit message (sender only, not deleted)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.675 ms
+Update on messages  (cost=0.42..8.44 rows=1 width=46) (actual time=0.627..0.628 rows=1.00 loops=1)
+  Buffers: shared hit=59
+  ->  Index Scan using messages_pkey on messages  (cost=0.42..8.44 rows=1 width=46) (actual time=0.021..0.021 rows=1.00 loops=1)
+        Index Cond: (message_id = 1)
+        Filter: ((deleted_at IS NULL) AND (sender_id = 54))
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=163
+Planning Time: 0.300 ms
+Execution Time: 0.675 ms
+
+-- Run 2: 0.640 ms
+Update on messages  (cost=0.42..8.44 rows=1 width=46) (actual time=0.594..0.594 rows=1.00 loops=1)
+  Buffers: shared hit=61
+  ->  Index Scan using messages_pkey on messages  (cost=0.42..8.44 rows=1 width=46) (actual time=0.022..0.023 rows=1.00 loops=1)
+        Index Cond: (message_id = 1)
+        Filter: ((deleted_at IS NULL) AND (sender_id = 54))
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=163
+Planning Time: 0.296 ms
+Execution Time: 0.640 ms
+
+-- Run 3: 0.656 ms
+Update on messages  (cost=0.42..8.44 rows=1 width=46) (actual time=0.610..0.611 rows=1.00 loops=1)
+  Buffers: shared hit=61
+  ->  Index Scan using messages_pkey on messages  (cost=0.42..8.44 rows=1 width=46) (actual time=0.022..0.022 rows=1.00 loops=1)
+        Index Cond: (message_id = 1)
+        Filter: ((deleted_at IS NULL) AND (sender_id = 54))
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=163
+Planning Time: 0.293 ms
+Execution Time: 0.656 ms

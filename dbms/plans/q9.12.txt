@@ -1,0 +1,11 @@
+-- Query 9.12: Refresh planner statistics after bulk loads (maintenance; updates catalog stats)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 122.238 ms
+-- ANALYZE refreshes catalog statistics and has no query plan; timing is psql client-side (\timing on).
+
+-- Run 2: 121.290 ms
+-- ANALYZE refreshes catalog statistics and has no query plan; timing is psql client-side (\timing on).
+
+-- Run 3: 123.284 ms
+-- ANALYZE refreshes catalog statistics and has no query plan; timing is psql client-side (\timing on).

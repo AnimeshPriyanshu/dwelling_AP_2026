@@ -1,0 +1,68 @@
+-- Query 5.2: Create direct conversation with both members (run 4.4 first to refuse if blocked, and 5.1 to avoid duplicates)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.688 ms
+Insert on conversation_members  (cost=0.02..0.09 rows=2 width=56) (actual time=0.240..0.243 rows=2.00 loops=1)
+  Buffers: shared hit=170
+  CTE conv
+    ->  Insert on conversations  (cost=0.00..0.02 rows=1 width=149) (actual time=0.158..0.159 rows=1.00 loops=1)
+          Buffers: shared hit=112
+          ->  Result  (cost=0.00..0.02 rows=1 width=149) (actual time=0.019..0.019 rows=1.00 loops=1)
+                Buffers: shared hit=15
+  ->  Nested Loop  (cost=0.00..0.07 rows=2 width=56) (actual time=0.163..0.164 rows=2.00 loops=1)
+        Buffers: shared hit=112
+        ->  CTE Scan on conv  (cost=0.00..0.02 rows=1 width=8) (actual time=0.159..0.159 rows=1.00 loops=1)
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=112
+        ->  Function Scan on unnest u  (cost=0.00..0.02 rows=2 width=8) (actual time=0.004..0.004 rows=2.00 loops=1)
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.074 ms
+Trigger for constraint conversations_created_by_fkey on conversations: time=0.295 calls=1
+Trigger for constraint conversation_members_conversation_id_fkey on conversation_members: time=0.100 calls=2
+Trigger for constraint conversation_members_user_id_fkey on conversation_members: time=0.027 calls=2
+Execution Time: 0.688 ms
+
+-- Run 2: 0.699 ms
+Insert on conversation_members  (cost=0.02..0.09 rows=2 width=56) (actual time=0.246..0.250 rows=2.00 loops=1)
+  Buffers: shared hit=170
+  CTE conv
+    ->  Insert on conversations  (cost=0.00..0.02 rows=1 width=149) (actual time=0.160..0.161 rows=1.00 loops=1)
+          Buffers: shared hit=112
+          ->  Result  (cost=0.00..0.02 rows=1 width=149) (actual time=0.020..0.020 rows=1.00 loops=1)
+                Buffers: shared hit=15
+  ->  Nested Loop  (cost=0.00..0.07 rows=2 width=56) (actual time=0.167..0.168 rows=2.00 loops=1)
+        Buffers: shared hit=112
+        ->  CTE Scan on conv  (cost=0.00..0.02 rows=1 width=8) (actual time=0.161..0.162 rows=1.00 loops=1)
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=112
+        ->  Function Scan on unnest u  (cost=0.00..0.02 rows=2 width=8) (actual time=0.004..0.004 rows=2.00 loops=1)
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.071 ms
+Trigger for constraint conversations_created_by_fkey on conversations: time=0.294 calls=1
+Trigger for constraint conversation_members_conversation_id_fkey on conversation_members: time=0.098 calls=2
+Trigger for constraint conversation_members_user_id_fkey on conversation_members: time=0.027 calls=2
+Execution Time: 0.699 ms
+
+-- Run 3: 0.625 ms
+Insert on conversation_members  (cost=0.02..0.09 rows=2 width=56) (actual time=0.215..0.217 rows=2.00 loops=1)
+  Buffers: shared hit=170
+  CTE conv
+    ->  Insert on conversations  (cost=0.00..0.02 rows=1 width=149) (actual time=0.142..0.143 rows=1.00 loops=1)
+          Buffers: shared hit=112
+          ->  Result  (cost=0.00..0.02 rows=1 width=149) (actual time=0.018..0.019 rows=1.00 loops=1)
+                Buffers: shared hit=15
+  ->  Nested Loop  (cost=0.00..0.07 rows=2 width=56) (actual time=0.148..0.148 rows=2.00 loops=1)
+        Buffers: shared hit=112
+        ->  CTE Scan on conv  (cost=0.00..0.02 rows=1 width=8) (actual time=0.143..0.143 rows=1.00 loops=1)
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=112
+        ->  Function Scan on unnest u  (cost=0.00..0.02 rows=2 width=8) (actual time=0.004..0.004 rows=2.00 loops=1)
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.067 ms
+Trigger for constraint conversations_created_by_fkey on conversations: time=0.262 calls=1
+Trigger for constraint conversation_members_conversation_id_fkey on conversation_members: time=0.100 calls=2
+Trigger for constraint conversation_members_user_id_fkey on conversation_members: time=0.026 calls=2
+Execution Time: 0.625 ms

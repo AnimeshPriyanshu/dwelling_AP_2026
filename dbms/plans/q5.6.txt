@@ -1,0 +1,80 @@
+-- Query 5.6: Conversation details + member count (only if requester is a member)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.066 ms
+GroupAggregate  (cost=0.84..24.99 rows=1 width=51) (actual time=0.042..0.043 rows=1.00 loops=1)
+  Buffers: shared hit=12
+  ->  Nested Loop  (cost=0.84..24.97 rows=3 width=51) (actual time=0.038..0.039 rows=2.00 loops=1)
+        Buffers: shared hit=12
+        ->  Nested Loop  (cost=0.56..16.61 rows=1 width=43) (actual time=0.032..0.033 rows=1.00 loops=1)
+              Buffers: shared hit=9
+              ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..8.29 rows=1 width=43) (actual time=0.005..0.006 rows=1.00 loops=1)
+                    Index Cond: (conversation_id = 1)
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Only Scan using idx_conv_members_user on conversation_members me  (cost=0.28..8.30 rows=1 width=8) (actual time=0.026..0.026 rows=1.00 loops=1)
+                    Index Cond: ((user_id = 1) AND (conversation_id = 1))
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Only Scan using conversation_members_pkey on conversation_members m  (cost=0.28..8.34 rows=3 width=16) (actual time=0.006..0.006 rows=2.00 loops=1)
+              Index Cond: (conversation_id = 1)
+              Heap Fetches: 0
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=221
+Planning Time: 0.416 ms
+Execution Time: 0.066 ms
+
+-- Run 2: 0.064 ms
+GroupAggregate  (cost=0.84..24.99 rows=1 width=51) (actual time=0.041..0.042 rows=1.00 loops=1)
+  Buffers: shared hit=12
+  ->  Nested Loop  (cost=0.84..24.97 rows=3 width=51) (actual time=0.037..0.038 rows=2.00 loops=1)
+        Buffers: shared hit=12
+        ->  Nested Loop  (cost=0.56..16.61 rows=1 width=43) (actual time=0.032..0.032 rows=1.00 loops=1)
+              Buffers: shared hit=9
+              ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..8.29 rows=1 width=43) (actual time=0.006..0.006 rows=1.00 loops=1)
+                    Index Cond: (conversation_id = 1)
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Only Scan using idx_conv_members_user on conversation_members me  (cost=0.28..8.30 rows=1 width=8) (actual time=0.025..0.025 rows=1.00 loops=1)
+                    Index Cond: ((user_id = 1) AND (conversation_id = 1))
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Only Scan using conversation_members_pkey on conversation_members m  (cost=0.28..8.34 rows=3 width=16) (actual time=0.005..0.005 rows=2.00 loops=1)
+              Index Cond: (conversation_id = 1)
+              Heap Fetches: 0
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=221
+Planning Time: 0.460 ms
+Execution Time: 0.064 ms
+
+-- Run 3: 0.066 ms
+GroupAggregate  (cost=0.84..24.99 rows=1 width=51) (actual time=0.043..0.043 rows=1.00 loops=1)
+  Buffers: shared hit=12
+  ->  Nested Loop  (cost=0.84..24.97 rows=3 width=51) (actual time=0.038..0.039 rows=2.00 loops=1)
+        Buffers: shared hit=12
+        ->  Nested Loop  (cost=0.56..16.61 rows=1 width=43) (actual time=0.032..0.032 rows=1.00 loops=1)
+              Buffers: shared hit=9
+              ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..8.29 rows=1 width=43) (actual time=0.006..0.006 rows=1.00 loops=1)
+                    Index Cond: (conversation_id = 1)
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Only Scan using idx_conv_members_user on conversation_members me  (cost=0.28..8.30 rows=1 width=8) (actual time=0.025..0.025 rows=1.00 loops=1)
+                    Index Cond: ((user_id = 1) AND (conversation_id = 1))
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Only Scan using conversation_members_pkey on conversation_members m  (cost=0.28..8.34 rows=3 width=16) (actual time=0.006..0.006 rows=2.00 loops=1)
+              Index Cond: (conversation_id = 1)
+              Heap Fetches: 0
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=221
+Planning Time: 0.433 ms
+Execution Time: 0.066 ms

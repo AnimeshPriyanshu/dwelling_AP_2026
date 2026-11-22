@@ -1,0 +1,65 @@
+-- Query 5.7: Search my group chats by title  (uses: idx_conversations_title_trgm)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.194 ms
+Hash Join  (cost=62.34..97.08 rows=32 width=21) (actual time=0.124..0.174 rows=353.00 loops=1)
+  Hash Cond: (m.conversation_id = c.conversation_id)
+  Buffers: shared hit=43
+  ->  Index Only Scan using idx_conv_members_user on conversation_members m  (cost=0.28..33.55 rows=560 width=8) (actual time=0.009..0.029 rows=550.00 loops=1)
+        Index Cond: (user_id = 188)
+        Heap Fetches: 19
+        Index Searches: 1
+        Buffers: shared hit=10
+  ->  Hash  (cost=60.75..60.75 rows=105 width=21) (actual time=0.111..0.111 rows=353.00 loops=1)
+        Buckets: 1024  Batches: 1  Memory Usage: 27kB
+        Buffers: shared hit=33
+        ->  Seq Scan on conversations c  (cost=0.00..60.75 rows=105 width=21) (actual time=0.052..0.091 rows=353.00 loops=1)
+              Filter: (((title)::text ~~* '%a%'::text) AND ((type)::text = 'group'::text))
+              Rows Removed by Filter: 1497
+              Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=324
+Planning Time: 1.058 ms
+Execution Time: 0.194 ms
+
+-- Run 2: 0.203 ms
+Hash Join  (cost=62.34..97.08 rows=32 width=21) (actual time=0.130..0.182 rows=353.00 loops=1)
+  Hash Cond: (m.conversation_id = c.conversation_id)
+  Buffers: shared hit=43
+  ->  Index Only Scan using idx_conv_members_user on conversation_members m  (cost=0.28..33.55 rows=560 width=8) (actual time=0.009..0.030 rows=550.00 loops=1)
+        Index Cond: (user_id = 188)
+        Heap Fetches: 19
+        Index Searches: 1
+        Buffers: shared hit=10
+  ->  Hash  (cost=60.75..60.75 rows=105 width=21) (actual time=0.117..0.117 rows=353.00 loops=1)
+        Buckets: 1024  Batches: 1  Memory Usage: 27kB
+        Buffers: shared hit=33
+        ->  Seq Scan on conversations c  (cost=0.00..60.75 rows=105 width=21) (actual time=0.055..0.095 rows=353.00 loops=1)
+              Filter: (((title)::text ~~* '%a%'::text) AND ((type)::text = 'group'::text))
+              Rows Removed by Filter: 1497
+              Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=324
+Planning Time: 0.948 ms
+Execution Time: 0.203 ms
+
+-- Run 3: 0.201 ms
+Hash Join  (cost=62.34..97.08 rows=32 width=21) (actual time=0.130..0.180 rows=353.00 loops=1)
+  Hash Cond: (m.conversation_id = c.conversation_id)
+  Buffers: shared hit=43
+  ->  Index Only Scan using idx_conv_members_user on conversation_members m  (cost=0.28..33.55 rows=560 width=8) (actual time=0.010..0.031 rows=550.00 loops=1)
+        Index Cond: (user_id = 188)
+        Heap Fetches: 19
+        Index Searches: 1
+        Buffers: shared hit=10
+  ->  Hash  (cost=60.75..60.75 rows=105 width=21) (actual time=0.116..0.116 rows=353.00 loops=1)
+        Buckets: 1024  Batches: 1  Memory Usage: 27kB
+        Buffers: shared hit=33
+        ->  Seq Scan on conversations c  (cost=0.00..60.75 rows=105 width=21) (actual time=0.054..0.095 rows=353.00 loops=1)
+              Filter: (((title)::text ~~* '%a%'::text) AND ((type)::text = 'group'::text))
+              Rows Removed by Filter: 1497
+              Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=324
+Planning Time: 0.900 ms
+Execution Time: 0.201 ms

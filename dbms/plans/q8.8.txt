@@ -1,0 +1,110 @@
+-- Query 8.8: Undelivered messages to push when a user reconnects
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 15.222 ms
+Sort  (cost=8297.96..8304.23 rows=2509 width=79) (actual time=15.087..15.155 rows=2355.00 loops=1)
+  Sort Key: m.created_at
+  Sort Method: quicksort  Memory: 327kB
+  Buffers: shared hit=2849
+  ->  Hash Join  (cost=4267.12..8156.29 rows=2509 width=79) (actual time=7.888..14.774 rows=2355.00 loops=1)
+        Hash Cond: (m.sender_id = u.user_id)
+        Buffers: shared hit=2846
+        ->  Hash Join  (cost=4184.83..8067.41 rows=2509 width=64) (actual time=7.667..14.318 rows=2355.00 loops=1)
+              Hash Cond: (m.message_id = r.message_id)
+              Buffers: shared hit=2810
+              ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=64) (actual time=0.002..8.045 rows=151935.00 loops=1)
+                    Filter: (deleted_at IS NULL)
+                    Rows Removed by Filter: 3065
+                    Buffers: shared hit=1934
+              ->  Hash  (cost=4152.82..4152.82 rows=2561 width=8) (actual time=1.390..1.390 rows=2404.00 loops=1)
+                    Buckets: 4096  Batches: 1  Memory Usage: 126kB
+                    Buffers: shared hit=876
+                    ->  Bitmap Heap Scan on message_receipts r  (cost=38.68..4152.82 rows=2561 width=8) (actual time=0.116..1.291 rows=2404.00 loops=1)
+                          Recheck Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+                          Heap Blocks: exact=869
+                          Buffers: shared hit=876
+                          ->  Bitmap Index Scan on idx_receipts_recipient_status  (cost=0.00..38.03 rows=2561 width=0) (actual time=0.071..0.071 rows=2419.00 loops=1)
+                                Index Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+                                Index Searches: 1
+                                Buffers: shared hit=7
+        ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.215..0.215 rows=2000.00 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 147kB
+              Buffers: shared hit=36
+              ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.003..0.112 rows=2000.00 loops=1)
+                    Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=486
+Planning Time: 0.844 ms
+Execution Time: 15.222 ms
+
+-- Run 2: 14.945 ms
+Sort  (cost=8297.96..8304.23 rows=2509 width=79) (actual time=14.821..14.880 rows=2355.00 loops=1)
+  Sort Key: m.created_at
+  Sort Method: quicksort  Memory: 327kB
+  Buffers: shared hit=2849
+  ->  Hash Join  (cost=4267.12..8156.29 rows=2509 width=79) (actual time=7.644..14.496 rows=2355.00 loops=1)
+        Hash Cond: (m.sender_id = u.user_id)
+        Buffers: shared hit=2846
+        ->  Hash Join  (cost=4184.83..8067.41 rows=2509 width=64) (actual time=7.428..14.050 rows=2355.00 loops=1)
+              Hash Cond: (m.message_id = r.message_id)
+              Buffers: shared hit=2810
+              ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=64) (actual time=0.002..8.007 rows=151935.00 loops=1)
+                    Filter: (deleted_at IS NULL)
+                    Rows Removed by Filter: 3065
+                    Buffers: shared hit=1934
+              ->  Hash  (cost=4152.82..4152.82 rows=2561 width=8) (actual time=1.217..1.218 rows=2404.00 loops=1)
+                    Buckets: 4096  Batches: 1  Memory Usage: 126kB
+                    Buffers: shared hit=876
+                    ->  Bitmap Heap Scan on message_receipts r  (cost=38.68..4152.82 rows=2561 width=8) (actual time=0.119..1.127 rows=2404.00 loops=1)
+                          Recheck Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+                          Heap Blocks: exact=869
+                          Buffers: shared hit=876
+                          ->  Bitmap Index Scan on idx_receipts_recipient_status  (cost=0.00..38.03 rows=2561 width=0) (actual time=0.071..0.072 rows=2419.00 loops=1)
+                                Index Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+                                Index Searches: 1
+                                Buffers: shared hit=7
+        ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.210..0.210 rows=2000.00 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 147kB
+              Buffers: shared hit=36
+              ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.109 rows=2000.00 loops=1)
+                    Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=486
+Planning Time: 0.816 ms
+Execution Time: 14.945 ms
+
+-- Run 3: 15.008 ms
+Sort  (cost=8297.96..8304.23 rows=2509 width=79) (actual time=14.863..14.937 rows=2355.00 loops=1)
+  Sort Key: m.created_at
+  Sort Method: quicksort  Memory: 327kB
+  Buffers: shared hit=2849
+  ->  Hash Join  (cost=4267.12..8156.29 rows=2509 width=79) (actual time=7.505..14.531 rows=2355.00 loops=1)
+        Hash Cond: (m.sender_id = u.user_id)
+        Buffers: shared hit=2846
+        ->  Hash Join  (cost=4184.83..8067.41 rows=2509 width=64) (actual time=7.268..14.034 rows=2355.00 loops=1)
+              Hash Cond: (m.message_id = r.message_id)
+              Buffers: shared hit=2810
+              ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=64) (actual time=0.002..7.934 rows=151935.00 loops=1)
+                    Filter: (deleted_at IS NULL)
+                    Rows Removed by Filter: 3065
+                    Buffers: shared hit=1934
+              ->  Hash  (cost=4152.82..4152.82 rows=2561 width=8) (actual time=1.223..1.223 rows=2404.00 loops=1)
+                    Buckets: 4096  Batches: 1  Memory Usage: 126kB
+                    Buffers: shared hit=876
+                    ->  Bitmap Heap Scan on message_receipts r  (cost=38.68..4152.82 rows=2561 width=8) (actual time=0.121..1.130 rows=2404.00 loops=1)
+                          Recheck Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+                          Heap Blocks: exact=869
+                          Buffers: shared hit=876
+                          ->  Bitmap Index Scan on idx_receipts_recipient_status  (cost=0.00..38.03 rows=2561 width=0) (actual time=0.077..0.077 rows=2419.00 loops=1)
+                                Index Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+                                Index Searches: 1
+                                Buffers: shared hit=7
+        ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.231..0.231 rows=2000.00 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 147kB
+              Buffers: shared hit=36
+              ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.112 rows=2000.00 loops=1)
+                    Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=486
+Planning Time: 0.816 ms
+Execution Time: 15.008 ms

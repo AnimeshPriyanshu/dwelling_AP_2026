@@ -1,0 +1,86 @@
+-- Query 5.1: Find existing direct conversation between two users
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.038 ms
+Limit  (cost=0.84..23.09 rows=1 width=8) (actual time=0.017..0.017 rows=1.00 loops=1)
+  Buffers: shared hit=12
+  ->  Nested Loop  (cost=0.84..23.09 rows=1 width=8) (actual time=0.016..0.016 rows=1.00 loops=1)
+        Buffers: shared hit=12
+        ->  Merge Join  (cost=0.56..17.46 rows=1 width=16) (actual time=0.012..0.012 rows=1.00 loops=1)
+              Merge Cond: (m1.conversation_id = m2.conversation_id)
+              Buffers: shared hit=9
+              ->  Index Only Scan using idx_conv_members_user on conversation_members m1  (cost=0.28..8.65 rows=21 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+                    Index Cond: (user_id = 1)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Only Scan using idx_conv_members_user on conversation_members m2  (cost=0.28..8.69 rows=23 width=8) (actual time=0.004..0.004 rows=1.00 loops=1)
+                    Index Cond: (user_id = 30)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..5.63 rows=1 width=8) (actual time=0.004..0.004 rows=1.00 loops=1)
+              Index Cond: (conversation_id = m1.conversation_id)
+              Filter: ((type)::text = 'direct'::text)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=343
+Planning Time: 0.657 ms
+Execution Time: 0.038 ms
+
+-- Run 2: 0.034 ms
+Limit  (cost=0.84..23.09 rows=1 width=8) (actual time=0.015..0.015 rows=1.00 loops=1)
+  Buffers: shared hit=12
+  ->  Nested Loop  (cost=0.84..23.09 rows=1 width=8) (actual time=0.014..0.014 rows=1.00 loops=1)
+        Buffers: shared hit=12
+        ->  Merge Join  (cost=0.56..17.46 rows=1 width=16) (actual time=0.011..0.011 rows=1.00 loops=1)
+              Merge Cond: (m1.conversation_id = m2.conversation_id)
+              Buffers: shared hit=9
+              ->  Index Only Scan using idx_conv_members_user on conversation_members m1  (cost=0.28..8.65 rows=21 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+                    Index Cond: (user_id = 1)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Only Scan using idx_conv_members_user on conversation_members m2  (cost=0.28..8.69 rows=23 width=8) (actual time=0.004..0.004 rows=1.00 loops=1)
+                    Index Cond: (user_id = 30)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..5.63 rows=1 width=8) (actual time=0.003..0.003 rows=1.00 loops=1)
+              Index Cond: (conversation_id = m1.conversation_id)
+              Filter: ((type)::text = 'direct'::text)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=343
+Planning Time: 0.617 ms
+Execution Time: 0.034 ms
+
+-- Run 3: 0.038 ms
+Limit  (cost=0.84..23.09 rows=1 width=8) (actual time=0.015..0.015 rows=1.00 loops=1)
+  Buffers: shared hit=12
+  ->  Nested Loop  (cost=0.84..23.09 rows=1 width=8) (actual time=0.014..0.015 rows=1.00 loops=1)
+        Buffers: shared hit=12
+        ->  Merge Join  (cost=0.56..17.46 rows=1 width=16) (actual time=0.011..0.011 rows=1.00 loops=1)
+              Merge Cond: (m1.conversation_id = m2.conversation_id)
+              Buffers: shared hit=9
+              ->  Index Only Scan using idx_conv_members_user on conversation_members m1  (cost=0.28..8.65 rows=21 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+                    Index Cond: (user_id = 1)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=6
+              ->  Index Only Scan using idx_conv_members_user on conversation_members m2  (cost=0.28..8.69 rows=23 width=8) (actual time=0.003..0.003 rows=1.00 loops=1)
+                    Index Cond: (user_id = 30)
+                    Heap Fetches: 0
+                    Index Searches: 1
+                    Buffers: shared hit=3
+        ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..5.63 rows=1 width=8) (actual time=0.003..0.003 rows=1.00 loops=1)
+              Index Cond: (conversation_id = m1.conversation_id)
+              Filter: ((type)::text = 'direct'::text)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=343
+Planning Time: 0.609 ms
+Execution Time: 0.038 ms

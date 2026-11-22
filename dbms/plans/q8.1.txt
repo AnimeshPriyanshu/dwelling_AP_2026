@@ -1,0 +1,50 @@
+-- Query 8.1: Mark everything pending for a user as DELIVERED (user comes online)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 12.152 ms
+Update on message_receipts  (cost=38.34..4105.65 rows=0 width=0) (actual time=12.105..12.105 rows=0.00 loops=1)
+  Buffers: shared hit=37272 dirtied=22 written=22
+  ->  Bitmap Heap Scan on message_receipts  (cost=38.34..4105.65 rows=2528 width=38) (actual time=0.128..2.007 rows=2404.00 loops=1)
+        Recheck Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+        Heap Blocks: exact=869
+        Buffers: shared hit=876
+        ->  Bitmap Index Scan on idx_receipts_recipient_status  (cost=0.00..37.70 rows=2528 width=0) (actual time=0.076..0.077 rows=2419.00 loops=1)
+              Index Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+              Index Searches: 1
+              Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.335 ms
+Execution Time: 12.152 ms
+
+-- Run 2: 11.336 ms
+Update on message_receipts  (cost=38.45..4123.86 rows=0 width=0) (actual time=11.295..11.295 rows=0.00 loops=1)
+  Buffers: shared hit=37251 dirtied=22 written=22
+  ->  Bitmap Heap Scan on message_receipts  (cost=38.45..4123.86 rows=2539 width=38) (actual time=0.127..2.035 rows=2404.00 loops=1)
+        Recheck Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+        Heap Blocks: exact=869
+        Buffers: shared hit=876
+        ->  Bitmap Index Scan on idx_receipts_recipient_status  (cost=0.00..37.81 rows=2539 width=0) (actual time=0.074..0.075 rows=2419.00 loops=1)
+              Index Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+              Index Searches: 1
+              Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.263 ms
+Execution Time: 11.336 ms
+
+-- Run 3: 11.862 ms
+Update on message_receipts  (cost=38.56..4141.02 rows=0 width=0) (actual time=11.818..11.818 rows=0.00 loops=1)
+  Buffers: shared hit=37388 dirtied=22 written=22
+  ->  Bitmap Heap Scan on message_receipts  (cost=38.56..4141.02 rows=2550 width=38) (actual time=0.282..2.256 rows=2404.00 loops=1)
+        Recheck Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+        Heap Blocks: exact=869
+        Buffers: shared hit=876
+        ->  Bitmap Index Scan on idx_receipts_recipient_status  (cost=0.00..37.92 rows=2550 width=0) (actual time=0.183..0.183 rows=2419.00 loops=1)
+              Index Cond: ((recipient_id = 1267) AND ((status)::text = 'sent'::text))
+              Index Searches: 1
+              Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.292 ms
+Execution Time: 11.862 ms

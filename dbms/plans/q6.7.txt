@@ -1,0 +1,41 @@
+-- Query 6.7: Is user a member? (call before every read / write to a conversation)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.048 ms
+Aggregate  (cost=8.30..8.32 rows=1 width=1) (actual time=0.036..0.036 rows=1.00 loops=1)
+  Buffers: shared hit=8
+  ->  Index Only Scan using idx_conv_members_user on conversation_members  (cost=0.28..8.30 rows=1 width=0) (actual time=0.030..0.033 rows=1.00 loops=1)
+        Index Cond: ((user_id = 188) AND (conversation_id = 1301))
+        Heap Fetches: 7
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=110
+Planning Time: 0.232 ms
+Execution Time: 0.048 ms
+
+-- Run 2: 0.045 ms
+Aggregate  (cost=8.30..8.32 rows=1 width=1) (actual time=0.033..0.033 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Only Scan using idx_conv_members_user on conversation_members  (cost=0.28..8.30 rows=1 width=0) (actual time=0.030..0.030 rows=1.00 loops=1)
+        Index Cond: ((user_id = 188) AND (conversation_id = 1301))
+        Heap Fetches: 1
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=110
+Planning Time: 0.225 ms
+Execution Time: 0.045 ms
+
+-- Run 3: 0.047 ms
+Aggregate  (cost=8.30..8.32 rows=1 width=1) (actual time=0.034..0.034 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Only Scan using idx_conv_members_user on conversation_members  (cost=0.28..8.30 rows=1 width=0) (actual time=0.031..0.031 rows=1.00 loops=1)
+        Index Cond: ((user_id = 188) AND (conversation_id = 1301))
+        Heap Fetches: 1
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=110
+Planning Time: 0.237 ms
+Execution Time: 0.047 ms

@@ -1,0 +1,38 @@
+-- Query 8.5: Overall status of a message for its sender (single / double / blue tick)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.034 ms
+Aggregate  (cost=15.60..15.62 rows=1 width=56) (actual time=0.016..0.016 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using message_receipts_pkey on message_receipts  (cost=0.42..15.51 rows=5 width=5) (actual time=0.011..0.011 rows=1.00 loops=1)
+        Index Cond: (message_id = 114)
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=124
+Planning Time: 0.270 ms
+Execution Time: 0.034 ms
+
+-- Run 2: 0.034 ms
+Aggregate  (cost=15.60..15.62 rows=1 width=56) (actual time=0.016..0.016 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using message_receipts_pkey on message_receipts  (cost=0.42..15.51 rows=5 width=5) (actual time=0.010..0.011 rows=1.00 loops=1)
+        Index Cond: (message_id = 114)
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=124
+Planning Time: 0.267 ms
+Execution Time: 0.034 ms
+
+-- Run 3: 0.131 ms
+Aggregate  (cost=15.60..15.62 rows=1 width=56) (actual time=0.094..0.094 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using message_receipts_pkey on message_receipts  (cost=0.42..15.51 rows=5 width=5) (actual time=0.069..0.070 rows=1.00 loops=1)
+        Index Cond: (message_id = 114)
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=124
+Planning Time: 0.264 ms
+Execution Time: 0.131 ms

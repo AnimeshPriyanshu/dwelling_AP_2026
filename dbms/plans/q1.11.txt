@@ -1,0 +1,113 @@
+-- Query 1.11: Search users by username / display name, hiding users who blocked me (uses: idx_users_username_trgm, idx_user_profiles_display_name_trgm)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.833 ms
+Limit  (cost=229.97..230.02 rows=20 width=76) (actual time=0.805..0.806 rows=20.00 loops=1)
+  Buffers: shared hit=79
+  ->  Sort  (cost=229.97..234.99 rows=2005 width=76) (actual time=0.804..0.805 rows=20.00 loops=1)
+        Sort Key: u.username
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=79
+        ->  Hash Anti Join  (cost=84.31..176.62 rows=2005 width=76) (actual time=0.256..0.671 rows=1902.00 loops=1)
+              Hash Cond: (u.user_id = b.user_id)
+              Buffers: shared hit=76
+              ->  Hash Left Join  (cost=80.00..147.00 rows=2006 width=76) (actual time=0.244..0.577 rows=1902.00 loops=1)
+                    Hash Cond: (u.user_id = p.user_id)
+                    Filter: (((u.username)::text ~~* '%a%'::text) OR ((p.display_name)::text ~~* '%a%'::text))
+                    Rows Removed by Filter: 49
+                    Buffers: shared hit=71
+                    ->  Seq Scan on users u  (cost=0.00..61.71 rows=2007 width=23) (actual time=0.003..0.127 rows=1951.00 loops=1)
+                          Filter: (active_status AND (user_id <> 1))
+                          Rows Removed by Filter: 49
+                          Buffers: shared hit=36
+                    ->  Hash  (cost=55.00..55.00 rows=2000 width=61) (actual time=0.238..0.238 rows=2000.00 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 192kB
+                          Buffers: shared hit=35
+                          ->  Seq Scan on user_profiles p  (cost=0.00..55.00 rows=2000 width=61) (actual time=0.002..0.119 rows=2000.00 loops=1)
+                                Buffers: shared hit=35
+              ->  Hash  (cost=4.29..4.29 rows=1 width=8) (actual time=0.009..0.009 rows=0.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                    Buffers: shared hit=5
+                    ->  Index Only Scan using idx_blocked_contacts_blocked_id on blocked_contacts b  (cost=0.28..4.29 rows=1 width=8) (actual time=0.009..0.009 rows=0.00 loops=1)
+                          Index Cond: (blocked_contact_id = 1)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=395
+Planning Time: 1.110 ms
+Execution Time: 0.833 ms
+
+-- Run 2: 0.823 ms
+Limit  (cost=229.97..230.02 rows=20 width=76) (actual time=0.796..0.798 rows=20.00 loops=1)
+  Buffers: shared hit=79
+  ->  Sort  (cost=229.97..234.99 rows=2005 width=76) (actual time=0.796..0.797 rows=20.00 loops=1)
+        Sort Key: u.username
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=79
+        ->  Hash Anti Join  (cost=84.31..176.62 rows=2005 width=76) (actual time=0.257..0.667 rows=1902.00 loops=1)
+              Hash Cond: (u.user_id = b.user_id)
+              Buffers: shared hit=76
+              ->  Hash Left Join  (cost=80.00..147.00 rows=2006 width=76) (actual time=0.245..0.570 rows=1902.00 loops=1)
+                    Hash Cond: (u.user_id = p.user_id)
+                    Filter: (((u.username)::text ~~* '%a%'::text) OR ((p.display_name)::text ~~* '%a%'::text))
+                    Rows Removed by Filter: 49
+                    Buffers: shared hit=71
+                    ->  Seq Scan on users u  (cost=0.00..61.71 rows=2007 width=23) (actual time=0.003..0.128 rows=1951.00 loops=1)
+                          Filter: (active_status AND (user_id <> 1))
+                          Rows Removed by Filter: 49
+                          Buffers: shared hit=36
+                    ->  Hash  (cost=55.00..55.00 rows=2000 width=61) (actual time=0.239..0.239 rows=2000.00 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 192kB
+                          Buffers: shared hit=35
+                          ->  Seq Scan on user_profiles p  (cost=0.00..55.00 rows=2000 width=61) (actual time=0.001..0.122 rows=2000.00 loops=1)
+                                Buffers: shared hit=35
+              ->  Hash  (cost=4.29..4.29 rows=1 width=8) (actual time=0.009..0.009 rows=0.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                    Buffers: shared hit=5
+                    ->  Index Only Scan using idx_blocked_contacts_blocked_id on blocked_contacts b  (cost=0.28..4.29 rows=1 width=8) (actual time=0.009..0.009 rows=0.00 loops=1)
+                          Index Cond: (blocked_contact_id = 1)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=395
+Planning Time: 1.112 ms
+Execution Time: 0.823 ms
+
+-- Run 3: 1.858 ms
+Limit  (cost=229.97..230.02 rows=20 width=76) (actual time=1.808..1.812 rows=20.00 loops=1)
+  Buffers: shared hit=79
+  ->  Sort  (cost=229.97..234.99 rows=2005 width=76) (actual time=1.807..1.809 rows=20.00 loops=1)
+        Sort Key: u.username
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=79
+        ->  Hash Anti Join  (cost=84.31..176.62 rows=2005 width=76) (actual time=0.588..1.519 rows=1902.00 loops=1)
+              Hash Cond: (u.user_id = b.user_id)
+              Buffers: shared hit=76
+              ->  Hash Left Join  (cost=80.00..147.00 rows=2006 width=76) (actual time=0.550..1.285 rows=1902.00 loops=1)
+                    Hash Cond: (u.user_id = p.user_id)
+                    Filter: (((u.username)::text ~~* '%a%'::text) OR ((p.display_name)::text ~~* '%a%'::text))
+                    Rows Removed by Filter: 49
+                    Buffers: shared hit=71
+                    ->  Seq Scan on users u  (cost=0.00..61.71 rows=2007 width=23) (actual time=0.012..0.273 rows=1951.00 loops=1)
+                          Filter: (active_status AND (user_id <> 1))
+                          Rows Removed by Filter: 49
+                          Buffers: shared hit=36
+                    ->  Hash  (cost=55.00..55.00 rows=2000 width=61) (actual time=0.529..0.530 rows=2000.00 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 192kB
+                          Buffers: shared hit=35
+                          ->  Seq Scan on user_profiles p  (cost=0.00..55.00 rows=2000 width=61) (actual time=0.005..0.273 rows=2000.00 loops=1)
+                                Buffers: shared hit=35
+              ->  Hash  (cost=4.29..4.29 rows=1 width=8) (actual time=0.030..0.030 rows=0.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                    Buffers: shared hit=5
+                    ->  Index Only Scan using idx_blocked_contacts_blocked_id on blocked_contacts b  (cost=0.28..4.29 rows=1 width=8) (actual time=0.029..0.030 rows=0.00 loops=1)
+                          Index Cond: (blocked_contact_id = 1)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=395
+Planning Time: 4.220 ms
+Execution Time: 1.858 ms

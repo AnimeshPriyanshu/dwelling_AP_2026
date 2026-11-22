@@ -1,0 +1,77 @@
+-- Query 9.5: Busiest conversations, last 24 hours
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 3.108 ms
+Limit  (cost=3784.49..3784.51 rows=10 width=29) (actual time=3.075..3.076 rows=10.00 loops=1)
+  Buffers: shared hit=6252
+  ->  Sort  (cost=3784.49..3791.63 rows=2857 width=29) (actual time=3.074..3.075 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=6252
+        ->  HashAggregate  (cost=3694.18..3722.75 rows=2857 width=29) (actual time=2.982..3.028 rows=766.00 loops=1)
+              Group Key: m.conversation_id, c.title
+              Batches: 1  Memory Usage: 153kB
+              Buffers: shared hit=6249
+              ->  Nested Loop  (cost=0.42..3672.75 rows=2857 width=21) (actual time=0.020..2.737 rows=2833.00 loops=1)
+                    Buffers: shared hit=6249
+                    ->  Seq Scan on conversations c  (cost=0.00..51.50 rows=1850 width=21) (actual time=0.014..0.068 rows=1850.00 loops=1)
+                          Buffers: shared hit=33
+                    ->  Index Only Scan using idx_messages_conv_all on messages m  (cost=0.42..1.94 rows=2 width=8) (actual time=0.001..0.001 rows=1.53 loops=1850)
+                          Index Cond: ((conversation_id = c.conversation_id) AND (created_at >= (now() - '24:00:00'::interval)))
+                          Heap Fetches: 1014
+                          Index Searches: 1850
+                          Buffers: shared hit=6216
+Planning:
+  Buffers: shared hit=304
+Planning Time: 0.578 ms
+Execution Time: 3.108 ms
+
+-- Run 2: 2.867 ms
+Limit  (cost=3784.49..3784.51 rows=10 width=29) (actual time=2.832..2.833 rows=10.00 loops=1)
+  Buffers: shared hit=6252
+  ->  Sort  (cost=3784.49..3791.63 rows=2857 width=29) (actual time=2.832..2.833 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=6252
+        ->  HashAggregate  (cost=3694.18..3722.75 rows=2857 width=29) (actual time=2.741..2.786 rows=766.00 loops=1)
+              Group Key: m.conversation_id, c.title
+              Batches: 1  Memory Usage: 153kB
+              Buffers: shared hit=6249
+              ->  Nested Loop  (cost=0.42..3672.75 rows=2857 width=21) (actual time=0.021..2.510 rows=2833.00 loops=1)
+                    Buffers: shared hit=6249
+                    ->  Seq Scan on conversations c  (cost=0.00..51.50 rows=1850 width=21) (actual time=0.015..0.066 rows=1850.00 loops=1)
+                          Buffers: shared hit=33
+                    ->  Index Only Scan using idx_messages_conv_all on messages m  (cost=0.42..1.94 rows=2 width=8) (actual time=0.001..0.001 rows=1.53 loops=1850)
+                          Index Cond: ((conversation_id = c.conversation_id) AND (created_at >= (now() - '24:00:00'::interval)))
+                          Heap Fetches: 1014
+                          Index Searches: 1850
+                          Buffers: shared hit=6216
+Planning:
+  Buffers: shared hit=304
+Planning Time: 0.624 ms
+Execution Time: 2.867 ms
+
+-- Run 3: 2.781 ms
+Limit  (cost=3784.49..3784.51 rows=10 width=29) (actual time=2.750..2.751 rows=10.00 loops=1)
+  Buffers: shared hit=6252
+  ->  Sort  (cost=3784.49..3791.63 rows=2857 width=29) (actual time=2.750..2.750 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=6252
+        ->  HashAggregate  (cost=3694.18..3722.75 rows=2857 width=29) (actual time=2.651..2.706 rows=766.00 loops=1)
+              Group Key: m.conversation_id, c.title
+              Batches: 1  Memory Usage: 153kB
+              Buffers: shared hit=6249
+              ->  Nested Loop  (cost=0.42..3672.75 rows=2857 width=21) (actual time=0.020..2.432 rows=2833.00 loops=1)
+                    Buffers: shared hit=6249
+                    ->  Seq Scan on conversations c  (cost=0.00..51.50 rows=1850 width=21) (actual time=0.014..0.063 rows=1850.00 loops=1)
+                          Buffers: shared hit=33
+                    ->  Index Only Scan using idx_messages_conv_all on messages m  (cost=0.42..1.94 rows=2 width=8) (actual time=0.001..0.001 rows=1.53 loops=1850)
+                          Index Cond: ((conversation_id = c.conversation_id) AND (created_at >= (now() - '24:00:00'::interval)))
+                          Heap Fetches: 1014
+                          Index Searches: 1850
+                          Buffers: shared hit=6216
+Planning:
+  Buffers: shared hit=304
+Planning Time: 0.565 ms
+Execution Time: 2.781 ms

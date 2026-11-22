@@ -1,0 +1,32 @@
+-- Query 1.3: Login by username  (uses: uq_users_username_lower)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.014 ms
+Index Scan using uq_users_username_lower on users  (cost=0.28..8.30 rows=1 width=64) (actual time=0.005..0.005 rows=1.00 loops=1)
+  Index Cond: (lower((username)::text) = 'neha.rao1'::text)
+  Index Searches: 1
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.305 ms
+Execution Time: 0.014 ms
+
+-- Run 2: 0.015 ms
+Index Scan using uq_users_username_lower on users  (cost=0.28..8.30 rows=1 width=64) (actual time=0.005..0.006 rows=1.00 loops=1)
+  Index Cond: (lower((username)::text) = 'neha.rao1'::text)
+  Index Searches: 1
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.300 ms
+Execution Time: 0.015 ms
+
+-- Run 3: 0.014 ms
+Index Scan using uq_users_username_lower on users  (cost=0.28..8.30 rows=1 width=64) (actual time=0.005..0.005 rows=1.00 loops=1)
+  Index Cond: (lower((username)::text) = 'neha.rao1'::text)
+  Index Searches: 1
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.294 ms
+Execution Time: 0.014 ms

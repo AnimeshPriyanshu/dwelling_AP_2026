@@ -1,0 +1,53 @@
+-- Query 9.3: Daily active users (users who sent at least one message)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 26.295 ms
+GroupAggregate  (cost=8305.36..9306.77 rows=44507 width=12) (actual time=23.815..26.167 rows=31.00 loops=1)
+  Group Key: ((date_trunc('day'::text, created_at))::date)
+  Buffers: shared hit=1940
+  ->  Sort  (cost=8305.36..8416.63 rows=44507 width=12) (actual time=23.751..24.646 rows=44229.00 loops=1)
+        Sort Key: ((date_trunc('day'::text, created_at))::date), sender_id
+        Sort Method: quicksort  Memory: 2919kB
+        Buffers: shared hit=1940
+        ->  Seq Scan on messages  (cost=0.00..4869.03 rows=44507 width=12) (actual time=0.006..18.131 rows=44229.00 loops=1)
+              Filter: (created_at >= (now() - '30 days'::interval))
+              Rows Removed by Filter: 110771
+              Buffers: shared hit=1934
+Planning:
+  Buffers: shared hit=194
+Planning Time: 0.334 ms
+Execution Time: 26.295 ms
+
+-- Run 2: 25.844 ms
+GroupAggregate  (cost=8305.36..9306.77 rows=44507 width=12) (actual time=23.611..25.809 rows=31.00 loops=1)
+  Group Key: ((date_trunc('day'::text, created_at))::date)
+  Buffers: shared hit=1940
+  ->  Sort  (cost=8305.36..8416.63 rows=44507 width=12) (actual time=23.542..24.415 rows=44229.00 loops=1)
+        Sort Key: ((date_trunc('day'::text, created_at))::date), sender_id
+        Sort Method: quicksort  Memory: 2919kB
+        Buffers: shared hit=1940
+        ->  Seq Scan on messages  (cost=0.00..4869.03 rows=44507 width=12) (actual time=0.004..18.033 rows=44229.00 loops=1)
+              Filter: (created_at >= (now() - '30 days'::interval))
+              Rows Removed by Filter: 110771
+              Buffers: shared hit=1934
+Planning:
+  Buffers: shared hit=194
+Planning Time: 0.351 ms
+Execution Time: 25.844 ms
+
+-- Run 3: 25.641 ms
+GroupAggregate  (cost=8305.36..9306.77 rows=44507 width=12) (actual time=23.397..25.616 rows=31.00 loops=1)
+  Group Key: ((date_trunc('day'::text, created_at))::date)
+  Buffers: shared hit=1940
+  ->  Sort  (cost=8305.36..8416.63 rows=44507 width=12) (actual time=23.334..24.229 rows=44229.00 loops=1)
+        Sort Key: ((date_trunc('day'::text, created_at))::date), sender_id
+        Sort Method: quicksort  Memory: 2919kB
+        Buffers: shared hit=1940
+        ->  Seq Scan on messages  (cost=0.00..4869.03 rows=44507 width=12) (actual time=0.004..17.988 rows=44229.00 loops=1)
+              Filter: (created_at >= (now() - '30 days'::interval))
+              Rows Removed by Filter: 110771
+              Buffers: shared hit=1934
+Planning:
+  Buffers: shared hit=194
+Planning Time: 0.337 ms
+Execution Time: 25.641 ms

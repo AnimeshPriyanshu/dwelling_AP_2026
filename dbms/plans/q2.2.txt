@@ -1,0 +1,38 @@
+-- Query 2.2: Remove avatar
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.500 ms
+Update on user_profiles  (cost=0.28..8.29 rows=0 width=0) (actual time=0.456..0.456 rows=0.00 loops=1)
+  Buffers: shared hit=39
+  ->  Index Scan using user_profiles_pkey on user_profiles  (cost=0.28..8.29 rows=1 width=274) (actual time=0.015..0.017 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=84
+Planning Time: 0.184 ms
+Execution Time: 0.500 ms
+
+-- Run 2: 0.498 ms
+Update on user_profiles  (cost=0.28..8.29 rows=0 width=0) (actual time=0.456..0.456 rows=0.00 loops=1)
+  Buffers: shared hit=39
+  ->  Index Scan using user_profiles_pkey on user_profiles  (cost=0.28..8.29 rows=1 width=274) (actual time=0.015..0.016 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=84
+Planning Time: 0.173 ms
+Execution Time: 0.498 ms
+
+-- Run 3: 0.616 ms
+Update on user_profiles  (cost=0.28..8.29 rows=0 width=0) (actual time=0.569..0.569 rows=0.00 loops=1)
+  Buffers: shared hit=39
+  ->  Index Scan using user_profiles_pkey on user_profiles  (cost=0.28..8.29 rows=1 width=274) (actual time=0.017..0.019 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=84
+Planning Time: 0.186 ms
+Execution Time: 0.616 ms

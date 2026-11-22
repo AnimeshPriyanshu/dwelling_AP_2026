@@ -1,0 +1,74 @@
+-- Query 7.3: Chat history, OLDER than cursor (infinite scroll up; keyset pagination)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.283 ms
+Limit  (cost=133.65..133.70 rows=21 width=87) (actual time=0.258..0.261 rows=50.00 loops=1)
+  Buffers: shared hit=94
+  ->  Sort  (cost=133.65..133.70 rows=21 width=87) (actual time=0.258..0.259 rows=50.00 loops=1)
+        Sort Key: m.created_at DESC, m.message_id DESC
+        Sort Method: quicksort  Memory: 35kB
+        Buffers: shared hit=94
+        ->  Hash Join  (cost=82.70..133.18 rows=21 width=87) (actual time=0.226..0.243 rows=76.00 loops=1)
+              Hash Cond: (m.sender_id = u.user_id)
+              Buffers: shared hit=88
+              ->  Index Scan using idx_messages_conv_timeline on messages m  (cost=0.42..50.85 rows=21 width=72) (actual time=0.008..0.018 rows=76.00 loops=1)
+                    Index Cond: ((conversation_id = 1301) AND (ROW(created_at, message_id) < ROW('2026-07-26 23:00:58.422781+05:30'::timestamp with time zone, 78061)))
+                    Index Searches: 1
+                    Buffers: shared hit=52
+              ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.213..0.213 rows=2000.00 loops=1)
+                    Buckets: 4096  Batches: 1  Memory Usage: 147kB
+                    Buffers: shared hit=36
+                    ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.003..0.110 rows=2000.00 loops=1)
+                          Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=341
+Planning Time: 0.586 ms
+Execution Time: 0.283 ms
+
+-- Run 2: 0.276 ms
+Limit  (cost=133.65..133.70 rows=21 width=87) (actual time=0.251..0.254 rows=50.00 loops=1)
+  Buffers: shared hit=94
+  ->  Sort  (cost=133.65..133.70 rows=21 width=87) (actual time=0.251..0.252 rows=50.00 loops=1)
+        Sort Key: m.created_at DESC, m.message_id DESC
+        Sort Method: quicksort  Memory: 35kB
+        Buffers: shared hit=94
+        ->  Hash Join  (cost=82.70..133.18 rows=21 width=87) (actual time=0.220..0.237 rows=76.00 loops=1)
+              Hash Cond: (m.sender_id = u.user_id)
+              Buffers: shared hit=88
+              ->  Index Scan using idx_messages_conv_timeline on messages m  (cost=0.42..50.85 rows=21 width=72) (actual time=0.009..0.019 rows=76.00 loops=1)
+                    Index Cond: ((conversation_id = 1301) AND (ROW(created_at, message_id) < ROW('2026-07-26 23:00:58.422781+05:30'::timestamp with time zone, 78061)))
+                    Index Searches: 1
+                    Buffers: shared hit=52
+              ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.206..0.206 rows=2000.00 loops=1)
+                    Buckets: 4096  Batches: 1  Memory Usage: 147kB
+                    Buffers: shared hit=36
+                    ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.105 rows=2000.00 loops=1)
+                          Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=341
+Planning Time: 0.567 ms
+Execution Time: 0.276 ms
+
+-- Run 3: 0.283 ms
+Limit  (cost=133.65..133.70 rows=21 width=87) (actual time=0.258..0.261 rows=50.00 loops=1)
+  Buffers: shared hit=94
+  ->  Sort  (cost=133.65..133.70 rows=21 width=87) (actual time=0.257..0.259 rows=50.00 loops=1)
+        Sort Key: m.created_at DESC, m.message_id DESC
+        Sort Method: quicksort  Memory: 35kB
+        Buffers: shared hit=94
+        ->  Hash Join  (cost=82.70..133.18 rows=21 width=87) (actual time=0.225..0.242 rows=76.00 loops=1)
+              Hash Cond: (m.sender_id = u.user_id)
+              Buffers: shared hit=88
+              ->  Index Scan using idx_messages_conv_timeline on messages m  (cost=0.42..50.85 rows=21 width=72) (actual time=0.009..0.019 rows=76.00 loops=1)
+                    Index Cond: ((conversation_id = 1301) AND (ROW(created_at, message_id) < ROW('2026-07-26 23:00:58.422781+05:30'::timestamp with time zone, 78061)))
+                    Index Searches: 1
+                    Buffers: shared hit=52
+              ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.211..0.211 rows=2000.00 loops=1)
+                    Buckets: 4096  Batches: 1  Memory Usage: 147kB
+                    Buffers: shared hit=36
+                    ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.003..0.108 rows=2000.00 loops=1)
+                          Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=341
+Planning Time: 0.598 ms
+Execution Time: 0.283 ms

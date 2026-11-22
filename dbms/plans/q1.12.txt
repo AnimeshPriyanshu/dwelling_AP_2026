@@ -1,0 +1,35 @@
+-- Query 1.12: Newest active users  (uses: idx_users_active_created)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.047 ms
+Limit  (cost=0.28..2.45 rows=20 width=31) (actual time=0.011..0.034 rows=20.00 loops=1)
+  Buffers: shared hit=20
+  ->  Index Scan using idx_users_active_created on users  (cost=0.28..217.92 rows=2008 width=31) (actual time=0.011..0.033 rows=20.00 loops=1)
+        Index Searches: 1
+        Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=170
+Planning Time: 0.312 ms
+Execution Time: 0.047 ms
+
+-- Run 2: 0.033 ms
+Limit  (cost=0.28..2.45 rows=20 width=31) (actual time=0.006..0.024 rows=20.00 loops=1)
+  Buffers: shared hit=19
+  ->  Index Scan using idx_users_active_created on users  (cost=0.28..217.92 rows=2008 width=31) (actual time=0.006..0.023 rows=20.00 loops=1)
+        Index Searches: 1
+        Buffers: shared hit=19
+Planning:
+  Buffers: shared hit=170
+Planning Time: 0.275 ms
+Execution Time: 0.033 ms
+
+-- Run 3: 0.035 ms
+Limit  (cost=0.28..2.45 rows=20 width=31) (actual time=0.007..0.026 rows=20.00 loops=1)
+  Buffers: shared hit=19
+  ->  Index Scan using idx_users_active_created on users  (cost=0.28..217.92 rows=2008 width=31) (actual time=0.006..0.024 rows=20.00 loops=1)
+        Index Searches: 1
+        Buffers: shared hit=19
+Planning:
+  Buffers: shared hit=170
+Planning Time: 0.287 ms
+Execution Time: 0.035 ms
