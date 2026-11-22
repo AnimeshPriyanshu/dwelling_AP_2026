@@ -1,0 +1,53 @@
+-- Query 1.1: Register user + empty profile in one statement
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.948 ms
+Insert on user_profiles  (cost=0.02..0.04 rows=1 width=392) (actual time=0.686..0.687 rows=1.00 loops=1)
+  Buffers: shared hit=183
+  CTE new_user
+    ->  Insert on users  (cost=0.00..0.02 rows=1 width=358) (actual time=0.596..0.597 rows=1.00 loops=1)
+          Buffers: shared hit=143
+          ->  Result  (cost=0.00..0.02 rows=1 width=358) (actual time=0.018..0.018 rows=1.00 loops=1)
+                Buffers: shared hit=15
+  ->  CTE Scan on new_user nu  (cost=0.00..0.03 rows=1 width=392) (actual time=0.598..0.599 rows=1.00 loops=1)
+        Storage: Memory  Maximum Storage: 17kB
+        Buffers: shared hit=143
+Planning:
+  Buffers: shared hit=15
+Planning Time: 0.069 ms
+Trigger for constraint user_profiles_user_id_fkey on user_profiles: time=0.239 calls=1
+Execution Time: 0.948 ms
+
+-- Run 2: 0.948 ms
+Insert on user_profiles  (cost=0.02..0.04 rows=1 width=392) (actual time=0.684..0.685 rows=1.00 loops=1)
+  Buffers: shared hit=177
+  CTE new_user
+    ->  Insert on users  (cost=0.00..0.02 rows=1 width=358) (actual time=0.612..0.613 rows=1.00 loops=1)
+          Buffers: shared hit=143
+          ->  Result  (cost=0.00..0.02 rows=1 width=358) (actual time=0.021..0.021 rows=1.00 loops=1)
+                Buffers: shared hit=15
+  ->  CTE Scan on new_user nu  (cost=0.00..0.03 rows=1 width=392) (actual time=0.614..0.615 rows=1.00 loops=1)
+        Storage: Memory  Maximum Storage: 17kB
+        Buffers: shared hit=143
+Planning:
+  Buffers: shared hit=15
+Planning Time: 0.066 ms
+Trigger for constraint user_profiles_user_id_fkey on user_profiles: time=0.242 calls=1
+Execution Time: 0.948 ms
+
+-- Run 3: 0.935 ms
+Insert on user_profiles  (cost=0.02..0.04 rows=1 width=392) (actual time=0.694..0.695 rows=1.00 loops=1)
+  Buffers: shared hit=182
+  CTE new_user
+    ->  Insert on users  (cost=0.00..0.02 rows=1 width=358) (actual time=0.628..0.629 rows=1.00 loops=1)
+          Buffers: shared hit=148
+          ->  Result  (cost=0.00..0.02 rows=1 width=358) (actual time=0.018..0.018 rows=1.00 loops=1)
+                Buffers: shared hit=15
+  ->  CTE Scan on new_user nu  (cost=0.00..0.03 rows=1 width=392) (actual time=0.630..0.630 rows=1.00 loops=1)
+        Storage: Memory  Maximum Storage: 17kB
+        Buffers: shared hit=148
+Planning:
+  Buffers: shared hit=15
+Planning Time: 0.063 ms
+Trigger for constraint user_profiles_user_id_fkey on user_profiles: time=0.218 calls=1
+Execution Time: 0.935 ms

@@ -1,0 +1,62 @@
+-- Query 8.9: First unread message in a conversation (scroll-to-unread marker)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.120 ms
+Aggregate  (cost=335.47..335.48 rows=1 width=8) (actual time=0.096..0.096 rows=1.00 loops=1)
+  Buffers: shared hit=437
+  ->  Nested Loop  (cost=0.84..335.46 rows=4 width=8) (actual time=0.026..0.093 rows=12.00 loops=1)
+        Buffers: shared hit=437
+        ->  Index Only Scan using idx_messages_conv_timeline on messages m  (cost=0.42..5.77 rows=77 width=8) (actual time=0.011..0.019 rows=137.00 loops=1)
+              Index Cond: (conversation_id = 1450)
+              Heap Fetches: 7
+              Index Searches: 1
+              Buffers: shared hit=13
+        ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..4.28 rows=1 width=8) (actual time=0.000..0.000 rows=0.09 loops=137)
+              Index Cond: ((recipient_id = 1267) AND (message_id = m.message_id))
+              Heap Fetches: 12
+              Index Searches: 137
+              Buffers: shared hit=424
+Planning:
+  Buffers: shared hit=373
+Planning Time: 0.616 ms
+Execution Time: 0.120 ms
+
+-- Run 2: 0.115 ms
+Aggregate  (cost=335.47..335.48 rows=1 width=8) (actual time=0.092..0.092 rows=1.00 loops=1)
+  Buffers: shared hit=437
+  ->  Nested Loop  (cost=0.84..335.46 rows=4 width=8) (actual time=0.024..0.090 rows=12.00 loops=1)
+        Buffers: shared hit=437
+        ->  Index Only Scan using idx_messages_conv_timeline on messages m  (cost=0.42..5.77 rows=77 width=8) (actual time=0.010..0.019 rows=137.00 loops=1)
+              Index Cond: (conversation_id = 1450)
+              Heap Fetches: 7
+              Index Searches: 1
+              Buffers: shared hit=13
+        ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..4.28 rows=1 width=8) (actual time=0.000..0.000 rows=0.09 loops=137)
+              Index Cond: ((recipient_id = 1267) AND (message_id = m.message_id))
+              Heap Fetches: 12
+              Index Searches: 137
+              Buffers: shared hit=424
+Planning:
+  Buffers: shared hit=373
+Planning Time: 0.613 ms
+Execution Time: 0.115 ms
+
+-- Run 3: 0.116 ms
+Aggregate  (cost=335.47..335.48 rows=1 width=8) (actual time=0.093..0.093 rows=1.00 loops=1)
+  Buffers: shared hit=437
+  ->  Nested Loop  (cost=0.84..335.46 rows=4 width=8) (actual time=0.026..0.090 rows=12.00 loops=1)
+        Buffers: shared hit=437
+        ->  Index Only Scan using idx_messages_conv_timeline on messages m  (cost=0.42..5.77 rows=77 width=8) (actual time=0.010..0.019 rows=137.00 loops=1)
+              Index Cond: (conversation_id = 1450)
+              Heap Fetches: 7
+              Index Searches: 1
+              Buffers: shared hit=13
+        ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..4.28 rows=1 width=8) (actual time=0.000..0.000 rows=0.09 loops=137)
+              Index Cond: ((recipient_id = 1267) AND (message_id = m.message_id))
+              Heap Fetches: 12
+              Index Searches: 137
+              Buffers: shared hit=424
+Planning:
+  Buffers: shared hit=373
+Planning Time: 0.641 ms
+Execution Time: 0.116 ms

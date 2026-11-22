@@ -1,0 +1,56 @@
+-- Query 9.6: Users who never sent a message
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 12.770 ms
+Hash Right Join  (cost=82.28..3973.99 rows=1 width=31) (actual time=12.687..12.732 rows=746.00 loops=1)
+  Hash Cond: (m.sender_id = u.user_id)
+  Filter: (m.message_id IS NULL)
+  Rows Removed by Filter: 155000
+  Buffers: shared hit=1970
+  ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=155000 width=16) (actual time=0.002..5.428 rows=155000.00 loops=1)
+        Buffers: shared hit=1934
+  ->  Hash  (cost=56.57..56.57 rows=2057 width=31) (actual time=0.226..0.226 rows=2000.00 loops=1)
+        Buckets: 4096  Batches: 1  Memory Usage: 163kB
+        Buffers: shared hit=36
+        ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=31) (actual time=0.003..0.122 rows=2000.00 loops=1)
+              Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=380
+Planning Time: 0.590 ms
+Execution Time: 12.770 ms
+
+-- Run 2: 12.770 ms
+Hash Right Join  (cost=82.28..3973.99 rows=1 width=31) (actual time=12.662..12.707 rows=746.00 loops=1)
+  Hash Cond: (m.sender_id = u.user_id)
+  Filter: (m.message_id IS NULL)
+  Rows Removed by Filter: 155000
+  Buffers: shared hit=1970
+  ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=155000 width=16) (actual time=0.002..5.328 rows=155000.00 loops=1)
+        Buffers: shared hit=1934
+  ->  Hash  (cost=56.57..56.57 rows=2057 width=31) (actual time=0.221..0.221 rows=2000.00 loops=1)
+        Buckets: 4096  Batches: 1  Memory Usage: 163kB
+        Buffers: shared hit=36
+        ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=31) (actual time=0.003..0.122 rows=2000.00 loops=1)
+              Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=380
+Planning Time: 0.627 ms
+Execution Time: 12.770 ms
+
+-- Run 3: 12.838 ms
+Hash Right Join  (cost=82.28..3973.99 rows=1 width=31) (actual time=12.753..12.799 rows=746.00 loops=1)
+  Hash Cond: (m.sender_id = u.user_id)
+  Filter: (m.message_id IS NULL)
+  Rows Removed by Filter: 155000
+  Buffers: shared hit=1970
+  ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=155000 width=16) (actual time=0.002..5.456 rows=155000.00 loops=1)
+        Buffers: shared hit=1934
+  ->  Hash  (cost=56.57..56.57 rows=2057 width=31) (actual time=0.223..0.223 rows=2000.00 loops=1)
+        Buckets: 4096  Batches: 1  Memory Usage: 163kB
+        Buffers: shared hit=36
+        ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=31) (actual time=0.002..0.123 rows=2000.00 loops=1)
+              Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=380
+Planning Time: 0.568 ms
+Execution Time: 12.838 ms

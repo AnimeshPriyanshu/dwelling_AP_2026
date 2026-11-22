@@ -1,0 +1,92 @@
+-- Query 9.11: Integrity check: members missing a receipt for messages sent after they joined
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 116.244 ms
+Gather  (cost=11450.68..26170.11 rows=58737 width=16) (actual time=112.803..116.218 rows=0.00 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=6752, temp read=6011 written=6076
+  ->  Parallel Hash Right Anti Join  (cost=10450.68..19296.41 rows=24474 width=16) (actual time=110.675..110.678 rows=0.00 loops=3)
+        Hash Cond: ((r.message_id = m.message_id) AND (r.recipient_id = cm.user_id))
+        Buffers: shared hit=6752, temp read=6011 written=6076
+        ->  Parallel Seq Scan on message_receipts r  (cost=0.00..6992.77 rows=233977 width=16) (actual time=0.025..7.191 rows=179860.00 loops=3)
+              Buffers: shared hit=4653
+        ->  Parallel Hash  (cost=8902.16..8902.16 rows=103235 width=16) (actual time=49.619..49.621 rows=179860.00 loops=3)
+              Buckets: 131072 (originally 262144)  Batches: 8 (originally 1)  Memory Usage: 4256kB
+              Buffers: shared hit=2099, temp written=2112
+              ->  Hash Join  (cost=202.74..8902.16 rows=103235 width=16) (actual time=0.611..21.479 rows=179860.00 loops=3)
+                    Hash Cond: (m.conversation_id = cm.conversation_id)
+                    Join Filter: ((cm.user_id <> m.sender_id) AND (m.created_at >= cm.joined_at))
+                    Rows Removed by Join Filter: 51667
+                    Buffers: shared hit=2099
+                    ->  Parallel Seq Scan on messages m  (cost=0.00..2845.76 rows=91176 width=32) (actual time=0.004..3.136 rows=51666.67 loops=3)
+                          Buffers: shared hit=1934
+                    ->  Hash  (cost=120.66..120.66 rows=6566 width=24) (actual time=0.599..0.601 rows=6447.00 loops=3)
+                          Buckets: 8192  Batches: 1  Memory Usage: 417kB
+                          Buffers: shared hit=165
+                          ->  Seq Scan on conversation_members cm  (cost=0.00..120.66 rows=6566 width=24) (actual time=0.015..0.287 rows=6447.00 loops=3)
+                                Buffers: shared hit=165
+Planning:
+  Buffers: shared hit=551
+Planning Time: 0.854 ms
+Execution Time: 116.244 ms
+
+-- Run 2: 96.673 ms
+Gather  (cost=11450.68..26170.11 rows=58737 width=16) (actual time=93.990..96.647 rows=0.00 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=6752, temp read=6013 written=6076
+  ->  Parallel Hash Right Anti Join  (cost=10450.68..19296.41 rows=24474 width=16) (actual time=92.075..92.077 rows=0.00 loops=3)
+        Hash Cond: ((r.message_id = m.message_id) AND (r.recipient_id = cm.user_id))
+        Buffers: shared hit=6752, temp read=6013 written=6076
+        ->  Parallel Seq Scan on message_receipts r  (cost=0.00..6992.77 rows=233977 width=16) (actual time=0.006..6.179 rows=179860.00 loops=3)
+              Buffers: shared hit=4653
+        ->  Parallel Hash  (cost=8902.16..8902.16 rows=103235 width=16) (actual time=40.217..40.218 rows=179860.00 loops=3)
+              Buckets: 131072 (originally 262144)  Batches: 8 (originally 1)  Memory Usage: 4224kB
+              Buffers: shared hit=2099, temp written=2108
+              ->  Hash Join  (cost=202.74..8902.16 rows=103235 width=16) (actual time=0.585..17.789 rows=179860.00 loops=3)
+                    Hash Cond: (m.conversation_id = cm.conversation_id)
+                    Join Filter: ((cm.user_id <> m.sender_id) AND (m.created_at >= cm.joined_at))
+                    Rows Removed by Join Filter: 51667
+                    Buffers: shared hit=2099
+                    ->  Parallel Seq Scan on messages m  (cost=0.00..2845.76 rows=91176 width=32) (actual time=0.003..2.244 rows=51666.67 loops=3)
+                          Buffers: shared hit=1934
+                    ->  Hash  (cost=120.66..120.66 rows=6566 width=24) (actual time=0.574..0.574 rows=6447.00 loops=3)
+                          Buckets: 8192  Batches: 1  Memory Usage: 417kB
+                          Buffers: shared hit=165
+                          ->  Seq Scan on conversation_members cm  (cost=0.00..120.66 rows=6566 width=24) (actual time=0.015..0.282 rows=6447.00 loops=3)
+                                Buffers: shared hit=165
+Planning:
+  Buffers: shared hit=551
+Planning Time: 1.001 ms
+Execution Time: 96.673 ms
+
+-- Run 3: 93.544 ms
+Gather  (cost=11450.68..26170.11 rows=58737 width=16) (actual time=91.242..93.519 rows=0.00 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=6752, temp read=6010 written=6068
+  ->  Parallel Hash Right Anti Join  (cost=10450.68..19296.41 rows=24474 width=16) (actual time=88.820..88.824 rows=0.00 loops=3)
+        Hash Cond: ((r.message_id = m.message_id) AND (r.recipient_id = cm.user_id))
+        Buffers: shared hit=6752, temp read=6010 written=6068
+        ->  Parallel Seq Scan on message_receipts r  (cost=0.00..6992.77 rows=233977 width=16) (actual time=0.006..6.227 rows=179860.00 loops=3)
+              Buffers: shared hit=4653
+        ->  Parallel Hash  (cost=8902.16..8902.16 rows=103235 width=16) (actual time=37.291..37.293 rows=179860.00 loops=3)
+              Buckets: 131072 (originally 262144)  Batches: 8 (originally 1)  Memory Usage: 4224kB
+              Buffers: shared hit=2099, temp written=2108
+              ->  Hash Join  (cost=202.74..8902.16 rows=103235 width=16) (actual time=0.605..16.739 rows=179860.00 loops=3)
+                    Hash Cond: (m.conversation_id = cm.conversation_id)
+                    Join Filter: ((cm.user_id <> m.sender_id) AND (m.created_at >= cm.joined_at))
+                    Rows Removed by Join Filter: 51667
+                    Buffers: shared hit=2099
+                    ->  Parallel Seq Scan on messages m  (cost=0.00..2845.76 rows=91176 width=32) (actual time=0.003..2.176 rows=51666.67 loops=3)
+                          Buffers: shared hit=1934
+                    ->  Hash  (cost=120.66..120.66 rows=6566 width=24) (actual time=0.594..0.594 rows=6447.00 loops=3)
+                          Buckets: 8192  Batches: 1  Memory Usage: 417kB
+                          Buffers: shared hit=165
+                          ->  Seq Scan on conversation_members cm  (cost=0.00..120.66 rows=6566 width=24) (actual time=0.015..0.283 rows=6447.00 loops=3)
+                                Buffers: shared hit=165
+Planning:
+  Buffers: shared hit=551
+Planning Time: 1.025 ms
+Execution Time: 93.544 ms

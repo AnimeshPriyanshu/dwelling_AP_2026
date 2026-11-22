@@ -1,0 +1,44 @@
+-- Query 7.13: Permanently purge messages soft-deleted over 30 days ago (scheduled job)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 21.643 ms
+Delete on messages  (cost=0.00..4646.50 rows=0 width=0) (actual time=7.376..7.376 rows=0.00 loops=1)
+  Buffers: shared hit=6345 dirtied=701
+  ->  Seq Scan on messages  (cost=0.00..4646.50 rows=46 width=6) (actual time=0.010..6.696 rows=2203.00 loops=1)
+        Filter: ((deleted_at IS NOT NULL) AND (deleted_at < (now() - '30 days'::interval)))
+        Rows Removed by Filter: 152797
+        Buffers: shared hit=1934
+Planning:
+  Buffers: shared hit=140
+Planning Time: 0.284 ms
+Trigger for constraint messages_reply_to_message_id_fkey: time=4.125 calls=2203
+Trigger for constraint message_receipts_message_id_fkey: time=9.994 calls=2203
+Execution Time: 21.643 ms
+
+-- Run 2: 26.045 ms
+Delete on messages  (cost=0.00..4646.50 rows=0 width=0) (actual time=8.056..8.056 rows=0.00 loops=1)
+  Buffers: shared hit=6345
+  ->  Seq Scan on messages  (cost=0.00..4646.50 rows=46 width=6) (actual time=0.047..7.428 rows=2203.00 loops=1)
+        Filter: ((deleted_at IS NOT NULL) AND (deleted_at < (now() - '30 days'::interval)))
+        Rows Removed by Filter: 152797
+        Buffers: shared hit=1934
+Planning:
+  Buffers: shared hit=140
+Planning Time: 0.394 ms
+Trigger for constraint messages_reply_to_message_id_fkey: time=4.403 calls=2203
+Trigger for constraint message_receipts_message_id_fkey: time=13.354 calls=2203
+Execution Time: 26.045 ms
+
+-- Run 3: 24.694 ms
+Delete on messages  (cost=0.00..4646.50 rows=0 width=0) (actual time=8.068..8.069 rows=0.00 loops=1)
+  Buffers: shared hit=6345
+  ->  Seq Scan on messages  (cost=0.00..4646.50 rows=46 width=6) (actual time=0.013..7.403 rows=2203.00 loops=1)
+        Filter: ((deleted_at IS NOT NULL) AND (deleted_at < (now() - '30 days'::interval)))
+        Rows Removed by Filter: 152797
+        Buffers: shared hit=1934
+Planning:
+  Buffers: shared hit=140
+Planning Time: 0.337 ms
+Trigger for constraint messages_reply_to_message_id_fkey: time=4.017 calls=2203
+Trigger for constraint message_receipts_message_id_fkey: time=12.466 calls=2203
+Execution Time: 24.694 ms

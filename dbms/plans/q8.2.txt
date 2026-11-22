@@ -1,0 +1,41 @@
+-- Query 8.2: Mark one message delivered
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.128 ms
+Update on message_receipts  (cost=0.42..8.44 rows=0 width=0) (actual time=0.092..0.092 rows=0.00 loops=1)
+  Buffers: shared hit=36
+  ->  Index Scan using idx_receipts_recipient_unread on message_receipts  (cost=0.42..8.44 rows=1 width=38) (actual time=0.016..0.016 rows=1.00 loops=1)
+        Index Cond: ((recipient_id = 1) AND (message_id = 114))
+        Filter: ((status)::text = 'sent'::text)
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.257 ms
+Execution Time: 0.128 ms
+
+-- Run 2: 0.153 ms
+Update on message_receipts  (cost=0.42..8.44 rows=0 width=0) (actual time=0.111..0.111 rows=0.00 loops=1)
+  Buffers: shared hit=39
+  ->  Index Scan using idx_receipts_recipient_unread on message_receipts  (cost=0.42..8.44 rows=1 width=38) (actual time=0.024..0.025 rows=1.00 loops=1)
+        Index Cond: ((recipient_id = 1) AND (message_id = 114))
+        Filter: ((status)::text = 'sent'::text)
+        Index Searches: 1
+        Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.316 ms
+Execution Time: 0.153 ms
+
+-- Run 3: 0.129 ms
+Update on message_receipts  (cost=0.42..8.44 rows=0 width=0) (actual time=0.092..0.092 rows=0.00 loops=1)
+  Buffers: shared hit=39
+  ->  Index Scan using idx_receipts_recipient_unread on message_receipts  (cost=0.42..8.44 rows=1 width=38) (actual time=0.015..0.017 rows=1.00 loops=1)
+        Index Cond: ((recipient_id = 1) AND (message_id = 114))
+        Filter: ((status)::text = 'sent'::text)
+        Index Searches: 1
+        Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.257 ms
+Execution Time: 0.129 ms

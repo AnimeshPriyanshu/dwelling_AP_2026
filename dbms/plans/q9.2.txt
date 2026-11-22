@@ -1,0 +1,86 @@
+-- Query 9.2: Top 10 most active senders, last 7 days
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 16.116 ms
+Limit  (cost=4905.65..4905.67 rows=10 width=31) (actual time=16.078..16.080 rows=10.00 loops=1)
+  Buffers: shared hit=1973
+  ->  Sort  (cost=4905.65..4910.79 rows=2057 width=31) (actual time=16.078..16.079 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=1973
+        ->  HashAggregate  (cost=4840.63..4861.20 rows=2057 width=31) (actual time=15.925..16.004 rows=938.00 loops=1)
+              Group Key: u.user_id
+              Batches: 1  Memory Usage: 153kB
+              Buffers: shared hit=1970
+              ->  Hash Join  (cost=82.28..4767.34 rows=14658 width=23) (actual time=0.229..15.009 rows=14584.00 loops=1)
+                    Hash Cond: (m.sender_id = u.user_id)
+                    Buffers: shared hit=1970
+                    ->  Seq Scan on messages m  (cost=0.00..4646.50 rows=14658 width=8) (actual time=0.005..13.608 rows=14584.00 loops=1)
+                          Filter: (created_at >= (now() - '7 days'::interval))
+                          Rows Removed by Filter: 140416
+                          Buffers: shared hit=1934
+                    ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.218..0.218 rows=2000.00 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 142kB
+                          Buffers: shared hit=36
+                          ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.115 rows=2000.00 loops=1)
+                                Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=321
+Planning Time: 0.950 ms
+Execution Time: 16.116 ms
+
+-- Run 2: 15.876 ms
+Limit  (cost=4905.65..4905.67 rows=10 width=31) (actual time=15.841..15.842 rows=10.00 loops=1)
+  Buffers: shared hit=1973
+  ->  Sort  (cost=4905.65..4910.79 rows=2057 width=31) (actual time=15.840..15.841 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=1973
+        ->  HashAggregate  (cost=4840.63..4861.20 rows=2057 width=31) (actual time=15.728..15.783 rows=938.00 loops=1)
+              Group Key: u.user_id
+              Batches: 1  Memory Usage: 153kB
+              Buffers: shared hit=1970
+              ->  Hash Join  (cost=82.28..4767.34 rows=14658 width=23) (actual time=0.225..14.831 rows=14584.00 loops=1)
+                    Hash Cond: (m.sender_id = u.user_id)
+                    Buffers: shared hit=1970
+                    ->  Seq Scan on messages m  (cost=0.00..4646.50 rows=14658 width=8) (actual time=0.005..13.487 rows=14584.00 loops=1)
+                          Filter: (created_at >= (now() - '7 days'::interval))
+                          Rows Removed by Filter: 140416
+                          Buffers: shared hit=1934
+                    ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.215..0.215 rows=2000.00 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 142kB
+                          Buffers: shared hit=36
+                          ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.115 rows=2000.00 loops=1)
+                                Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=321
+Planning Time: 0.670 ms
+Execution Time: 15.876 ms
+
+-- Run 3: 15.672 ms
+Limit  (cost=4905.65..4905.67 rows=10 width=31) (actual time=15.636..15.637 rows=10.00 loops=1)
+  Buffers: shared hit=1973
+  ->  Sort  (cost=4905.65..4910.79 rows=2057 width=31) (actual time=15.635..15.636 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=1973
+        ->  HashAggregate  (cost=4840.63..4861.20 rows=2057 width=31) (actual time=15.523..15.578 rows=938.00 loops=1)
+              Group Key: u.user_id
+              Batches: 1  Memory Usage: 153kB
+              Buffers: shared hit=1970
+              ->  Hash Join  (cost=82.28..4767.34 rows=14658 width=23) (actual time=0.231..14.617 rows=14584.00 loops=1)
+                    Hash Cond: (m.sender_id = u.user_id)
+                    Buffers: shared hit=1970
+                    ->  Seq Scan on messages m  (cost=0.00..4646.50 rows=14658 width=8) (actual time=0.005..13.286 rows=14584.00 loops=1)
+                          Filter: (created_at >= (now() - '7 days'::interval))
+                          Rows Removed by Filter: 140416
+                          Buffers: shared hit=1934
+                    ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.220..0.220 rows=2000.00 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 142kB
+                          Buffers: shared hit=36
+                          ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.117 rows=2000.00 loops=1)
+                                Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=321
+Planning Time: 0.853 ms
+Execution Time: 15.672 ms

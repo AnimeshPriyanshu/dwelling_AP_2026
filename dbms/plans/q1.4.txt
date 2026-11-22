@@ -1,0 +1,59 @@
+-- Query 1.4: Check username / email availability
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.030 ms
+Nested Loop Left Join  (cost=0.56..16.62 rows=1 width=2) (actual time=0.012..0.013 rows=1.00 loops=1)
+  Buffers: shared hit=6
+  ->  Nested Loop Left Join  (cost=0.28..8.32 rows=1 width=8) (actual time=0.006..0.007 rows=1.00 loops=1)
+        Buffers: shared hit=3
+        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+        ->  Index Scan using uq_users_username_lower on users u1  (cost=0.28..8.30 rows=1 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+              Index Cond: (lower((username)::text) = 'neha.rao1'::text)
+              Index Searches: 1
+              Buffers: shared hit=3
+  ->  Index Scan using uq_users_email_lower on users u2  (cost=0.28..8.30 rows=1 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (lower((email)::text) = 'neha.rao1@mail.test'::text)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=144
+Planning Time: 0.314 ms
+Execution Time: 0.030 ms
+
+-- Run 2: 0.027 ms
+Nested Loop Left Join  (cost=0.56..16.62 rows=1 width=2) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=6
+  ->  Nested Loop Left Join  (cost=0.28..8.32 rows=1 width=8) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Buffers: shared hit=3
+        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+        ->  Index Scan using uq_users_username_lower on users u1  (cost=0.28..8.30 rows=1 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+              Index Cond: (lower((username)::text) = 'neha.rao1'::text)
+              Index Searches: 1
+              Buffers: shared hit=3
+  ->  Index Scan using uq_users_email_lower on users u2  (cost=0.28..8.30 rows=1 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (lower((email)::text) = 'neha.rao1@mail.test'::text)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=144
+Planning Time: 0.292 ms
+Execution Time: 0.027 ms
+
+-- Run 3: 0.027 ms
+Nested Loop Left Join  (cost=0.56..16.62 rows=1 width=2) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=6
+  ->  Nested Loop Left Join  (cost=0.28..8.32 rows=1 width=8) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Buffers: shared hit=3
+        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+        ->  Index Scan using uq_users_username_lower on users u1  (cost=0.28..8.30 rows=1 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+              Index Cond: (lower((username)::text) = 'neha.rao1'::text)
+              Index Searches: 1
+              Buffers: shared hit=3
+  ->  Index Scan using uq_users_email_lower on users u2  (cost=0.28..8.30 rows=1 width=8) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (lower((email)::text) = 'neha.rao1@mail.test'::text)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=144
+Planning Time: 0.286 ms
+Execution Time: 0.027 ms

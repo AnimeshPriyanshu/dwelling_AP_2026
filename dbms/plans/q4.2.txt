@@ -1,0 +1,38 @@
+-- Query 4.2: Unblock user
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.056 ms
+Delete on blocked_contacts  (cost=0.28..8.30 rows=0 width=0) (actual time=0.019..0.019 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using idx_blocked_contacts_blocked_id on blocked_contacts  (cost=0.28..8.30 rows=1 width=6) (actual time=0.009..0.009 rows=1.00 loops=1)
+        Index Cond: ((blocked_contact_id = 283) AND (user_id = 1))
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=89
+Planning Time: 0.168 ms
+Execution Time: 0.056 ms
+
+-- Run 2: 0.067 ms
+Delete on blocked_contacts  (cost=0.28..8.30 rows=0 width=0) (actual time=0.024..0.024 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using idx_blocked_contacts_blocked_id on blocked_contacts  (cost=0.28..8.30 rows=1 width=6) (actual time=0.014..0.014 rows=1.00 loops=1)
+        Index Cond: ((blocked_contact_id = 283) AND (user_id = 1))
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=89
+Planning Time: 0.178 ms
+Execution Time: 0.067 ms
+
+-- Run 3: 0.072 ms
+Delete on blocked_contacts  (cost=0.28..8.30 rows=0 width=0) (actual time=0.027..0.027 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using idx_blocked_contacts_blocked_id on blocked_contacts  (cost=0.28..8.30 rows=1 width=6) (actual time=0.016..0.016 rows=1.00 loops=1)
+        Index Cond: ((blocked_contact_id = 283) AND (user_id = 1))
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=89
+Planning Time: 0.200 ms
+Execution Time: 0.072 ms

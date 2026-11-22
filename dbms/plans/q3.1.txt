@@ -1,0 +1,92 @@
+-- Query 3.1: Add contact (idempotent; refused if either side has blocked the other)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.396 ms
+Insert on contacts  (cost=8.58..12.62 rows=0 width=0) (actual time=0.108..0.109 rows=0.00 loops=1)
+  Conflict Resolution: NOTHING
+  Tuples Inserted: 1
+  Conflicting Tuples: 0
+  Buffers: shared hit=54
+  ->  Nested Loop Anti Join  (cost=8.58..12.62 rows=1 width=24) (actual time=0.010..0.010 rows=1.00 loops=1)
+        Buffers: shared hit=5
+        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+        ->  Bitmap Heap Scan on blocked_contacts b  (cost=8.58..12.60 rows=1 width=0) (actual time=0.009..0.009 rows=0.00 loops=1)
+              Recheck Cond: (((blocked_contact_id = '6'::bigint) AND (user_id = '5'::bigint)) OR ((blocked_contact_id = '5'::bigint) AND (user_id = '6'::bigint)))
+              Heap Blocks: exact=1
+              Buffers: shared hit=5
+              ->  BitmapOr  (cost=8.58..8.58 rows=1 width=0) (actual time=0.005..0.005 rows=0.00 loops=1)
+                    Buffers: shared hit=4
+                    ->  Bitmap Index Scan on idx_blocked_contacts_blocked_id  (cost=0.00..4.29 rows=1 width=0) (actual time=0.004..0.004 rows=12.00 loops=1)
+                          Index Cond: ((blocked_contact_id = '6'::bigint) AND (user_id = '5'::bigint))
+                          Index Searches: 1
+                          Buffers: shared hit=2
+                    ->  Bitmap Index Scan on idx_blocked_contacts_blocked_id  (cost=0.00..4.29 rows=1 width=0) (actual time=0.000..0.000 rows=0.00 loops=1)
+                          Index Cond: ((blocked_contact_id = '5'::bigint) AND (user_id = '6'::bigint))
+                          Index Searches: 1
+                          Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=103
+Planning Time: 0.236 ms
+Trigger for constraint contacts_user_id_fkey: time=0.245 calls=1
+Trigger for constraint contacts_contact_id_fkey: time=0.024 calls=1
+Execution Time: 0.396 ms
+
+-- Run 2: 0.411 ms
+Insert on contacts  (cost=8.58..12.62 rows=0 width=0) (actual time=0.109..0.110 rows=0.00 loops=1)
+  Conflict Resolution: NOTHING
+  Tuples Inserted: 1
+  Conflicting Tuples: 0
+  Buffers: shared hit=53
+  ->  Nested Loop Anti Join  (cost=8.58..12.62 rows=1 width=24) (actual time=0.011..0.012 rows=1.00 loops=1)
+        Buffers: shared hit=5
+        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+        ->  Bitmap Heap Scan on blocked_contacts b  (cost=8.58..12.60 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=1)
+              Recheck Cond: (((blocked_contact_id = '6'::bigint) AND (user_id = '5'::bigint)) OR ((blocked_contact_id = '5'::bigint) AND (user_id = '6'::bigint)))
+              Heap Blocks: exact=1
+              Buffers: shared hit=5
+              ->  BitmapOr  (cost=8.58..8.58 rows=1 width=0) (actual time=0.006..0.006 rows=0.00 loops=1)
+                    Buffers: shared hit=4
+                    ->  Bitmap Index Scan on idx_blocked_contacts_blocked_id  (cost=0.00..4.29 rows=1 width=0) (actual time=0.006..0.006 rows=12.00 loops=1)
+                          Index Cond: ((blocked_contact_id = '6'::bigint) AND (user_id = '5'::bigint))
+                          Index Searches: 1
+                          Buffers: shared hit=2
+                    ->  Bitmap Index Scan on idx_blocked_contacts_blocked_id  (cost=0.00..4.29 rows=1 width=0) (actual time=0.000..0.000 rows=0.00 loops=1)
+                          Index Cond: ((blocked_contact_id = '5'::bigint) AND (user_id = '6'::bigint))
+                          Index Searches: 1
+                          Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=103
+Planning Time: 0.262 ms
+Trigger for constraint contacts_user_id_fkey: time=0.256 calls=1
+Trigger for constraint contacts_contact_id_fkey: time=0.023 calls=1
+Execution Time: 0.411 ms
+
+-- Run 3: 0.424 ms
+Insert on contacts  (cost=8.58..12.62 rows=0 width=0) (actual time=0.114..0.115 rows=0.00 loops=1)
+  Conflict Resolution: NOTHING
+  Tuples Inserted: 1
+  Conflicting Tuples: 0
+  Buffers: shared hit=54
+  ->  Nested Loop Anti Join  (cost=8.58..12.62 rows=1 width=24) (actual time=0.010..0.010 rows=1.00 loops=1)
+        Buffers: shared hit=5
+        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+        ->  Bitmap Heap Scan on blocked_contacts b  (cost=8.58..12.60 rows=1 width=0) (actual time=0.009..0.009 rows=0.00 loops=1)
+              Recheck Cond: (((blocked_contact_id = '6'::bigint) AND (user_id = '5'::bigint)) OR ((blocked_contact_id = '5'::bigint) AND (user_id = '6'::bigint)))
+              Heap Blocks: exact=1
+              Buffers: shared hit=5
+              ->  BitmapOr  (cost=8.58..8.58 rows=1 width=0) (actual time=0.005..0.005 rows=0.00 loops=1)
+                    Buffers: shared hit=4
+                    ->  Bitmap Index Scan on idx_blocked_contacts_blocked_id  (cost=0.00..4.29 rows=1 width=0) (actual time=0.004..0.004 rows=12.00 loops=1)
+                          Index Cond: ((blocked_contact_id = '6'::bigint) AND (user_id = '5'::bigint))
+                          Index Searches: 1
+                          Buffers: shared hit=2
+                    ->  Bitmap Index Scan on idx_blocked_contacts_blocked_id  (cost=0.00..4.29 rows=1 width=0) (actual time=0.000..0.000 rows=0.00 loops=1)
+                          Index Cond: ((blocked_contact_id = '5'::bigint) AND (user_id = '6'::bigint))
+                          Index Searches: 1
+                          Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=103
+Planning Time: 0.254 ms
+Trigger for constraint contacts_user_id_fkey: time=0.265 calls=1
+Trigger for constraint contacts_contact_id_fkey: time=0.026 calls=1
+Execution Time: 0.424 ms

@@ -1,0 +1,56 @@
+-- Query 7.2: Chat history, FIRST PAGE (latest messages)  (uses: idx_messages_conv_timeline)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.080 ms
+Limit  (cost=0.70..238.04 rows=50 width=87) (actual time=0.023..0.063 rows=50.00 loops=1)
+  Buffers: shared hit=191
+  ->  Nested Loop  (cost=0.70..366.20 rows=77 width=87) (actual time=0.022..0.061 rows=50.00 loops=1)
+        Buffers: shared hit=191
+        ->  Index Scan using idx_messages_conv_timeline on messages m  (cost=0.42..167.29 rows=77 width=72) (actual time=0.018..0.027 rows=50.00 loops=1)
+              Index Cond: (conversation_id = 1301)
+              Index Searches: 1
+              Buffers: shared hit=41
+        ->  Index Scan using users_pkey on users u  (cost=0.28..2.58 rows=1 width=23) (actual time=0.001..0.001 rows=1.00 loops=50)
+              Index Cond: (user_id = m.sender_id)
+              Index Searches: 50
+              Buffers: shared hit=150
+Planning:
+  Buffers: shared hit=333
+Planning Time: 0.602 ms
+Execution Time: 0.080 ms
+
+-- Run 2: 0.069 ms
+Limit  (cost=0.70..238.04 rows=50 width=87) (actual time=0.015..0.054 rows=50.00 loops=1)
+  Buffers: shared hit=188
+  ->  Nested Loop  (cost=0.70..366.20 rows=77 width=87) (actual time=0.015..0.051 rows=50.00 loops=1)
+        Buffers: shared hit=188
+        ->  Index Scan using idx_messages_conv_timeline on messages m  (cost=0.42..167.29 rows=77 width=72) (actual time=0.011..0.017 rows=50.00 loops=1)
+              Index Cond: (conversation_id = 1301)
+              Index Searches: 1
+              Buffers: shared hit=38
+        ->  Index Scan using users_pkey on users u  (cost=0.28..2.58 rows=1 width=23) (actual time=0.001..0.001 rows=1.00 loops=50)
+              Index Cond: (user_id = m.sender_id)
+              Index Searches: 50
+              Buffers: shared hit=150
+Planning:
+  Buffers: shared hit=333
+Planning Time: 0.575 ms
+Execution Time: 0.069 ms
+
+-- Run 3: 0.071 ms
+Limit  (cost=0.70..238.04 rows=50 width=87) (actual time=0.016..0.054 rows=50.00 loops=1)
+  Buffers: shared hit=188
+  ->  Nested Loop  (cost=0.70..366.20 rows=77 width=87) (actual time=0.015..0.052 rows=50.00 loops=1)
+        Buffers: shared hit=188
+        ->  Index Scan using idx_messages_conv_timeline on messages m  (cost=0.42..167.29 rows=77 width=72) (actual time=0.011..0.018 rows=50.00 loops=1)
+              Index Cond: (conversation_id = 1301)
+              Index Searches: 1
+              Buffers: shared hit=38
+        ->  Index Scan using users_pkey on users u  (cost=0.28..2.58 rows=1 width=23) (actual time=0.001..0.001 rows=1.00 loops=50)
+              Index Cond: (user_id = m.sender_id)
+              Index Searches: 50
+              Buffers: shared hit=150
+Planning:
+  Buffers: shared hit=333
+Planning Time: 0.612 ms
+Execution Time: 0.071 ms

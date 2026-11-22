@@ -1,0 +1,38 @@
+-- Query 3.2: Remove contact
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.069 ms
+Delete on contacts  (cost=0.29..8.31 rows=0 width=0) (actual time=0.022..0.023 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using idx_contacts_contact_id on contacts  (cost=0.29..8.31 rows=1 width=6) (actual time=0.012..0.012 rows=1.00 loops=1)
+        Index Cond: ((contact_id = 30) AND (user_id = 1))
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=89
+Planning Time: 0.187 ms
+Execution Time: 0.069 ms
+
+-- Run 2: 0.068 ms
+Delete on contacts  (cost=0.29..8.31 rows=0 width=0) (actual time=0.024..0.024 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using idx_contacts_contact_id on contacts  (cost=0.29..8.31 rows=1 width=6) (actual time=0.014..0.014 rows=1.00 loops=1)
+        Index Cond: ((contact_id = 30) AND (user_id = 1))
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=89
+Planning Time: 0.178 ms
+Execution Time: 0.068 ms
+
+-- Run 3: 0.075 ms
+Delete on contacts  (cost=0.29..8.31 rows=0 width=0) (actual time=0.025..0.025 rows=0.00 loops=1)
+  Buffers: shared hit=7
+  ->  Index Scan using idx_contacts_contact_id on contacts  (cost=0.29..8.31 rows=1 width=6) (actual time=0.016..0.017 rows=1.00 loops=1)
+        Index Cond: ((contact_id = 30) AND (user_id = 1))
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=89
+Planning Time: 0.169 ms
+Execution Time: 0.075 ms

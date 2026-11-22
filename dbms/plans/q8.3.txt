@@ -1,0 +1,62 @@
+-- Query 8.3: Mark a conversation READ up to a message (user opened the chat) (uses: idx_receipts_recipient_unread)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.270 ms
+Update on message_receipts r  (cost=0.84..579.62 rows=0 width=0) (actual time=0.227..0.227 rows=0.00 loops=1)
+  Buffers: shared hit=674
+  ->  Nested Loop  (cost=0.84..579.62 rows=3 width=52) (actual time=0.034..0.116 rows=12.00 loops=1)
+        Buffers: shared hit=518
+        ->  Index Scan using idx_messages_conv_all on messages m  (cost=0.42..169.61 rows=50 width=14) (actual time=0.014..0.034 rows=140.00 loops=1)
+              Index Cond: (conversation_id = 1450)
+              Filter: (message_id <= 99000)
+              Index Searches: 1
+              Buffers: shared hit=86
+        ->  Index Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..8.20 rows=1 width=22) (actual time=0.000..0.000 rows=0.09 loops=140)
+              Index Cond: ((recipient_id = 1267) AND (message_id = m.message_id))
+              Filter: ((status)::text <> 'read'::text)
+              Index Searches: 140
+              Buffers: shared hit=432
+Planning:
+  Buffers: shared hit=370
+Planning Time: 0.612 ms
+Execution Time: 0.270 ms
+
+-- Run 2: 0.296 ms
+Update on message_receipts r  (cost=0.84..579.62 rows=0 width=0) (actual time=0.253..0.253 rows=0.00 loops=1)
+  Buffers: shared hit=684
+  ->  Nested Loop  (cost=0.84..579.62 rows=3 width=52) (actual time=0.034..0.114 rows=12.00 loops=1)
+        Buffers: shared hit=518
+        ->  Index Scan using idx_messages_conv_all on messages m  (cost=0.42..169.61 rows=50 width=14) (actual time=0.014..0.032 rows=140.00 loops=1)
+              Index Cond: (conversation_id = 1450)
+              Filter: (message_id <= 99000)
+              Index Searches: 1
+              Buffers: shared hit=86
+        ->  Index Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..8.20 rows=1 width=22) (actual time=0.000..0.000 rows=0.09 loops=140)
+              Index Cond: ((recipient_id = 1267) AND (message_id = m.message_id))
+              Filter: ((status)::text <> 'read'::text)
+              Index Searches: 140
+              Buffers: shared hit=432
+Planning:
+  Buffers: shared hit=369
+Planning Time: 0.592 ms
+Execution Time: 0.296 ms
+
+-- Run 3: 0.272 ms
+Update on message_receipts r  (cost=0.84..579.62 rows=0 width=0) (actual time=0.227..0.228 rows=0.00 loops=1)
+  Buffers: shared hit=674
+  ->  Nested Loop  (cost=0.84..579.62 rows=3 width=52) (actual time=0.035..0.116 rows=12.00 loops=1)
+        Buffers: shared hit=518
+        ->  Index Scan using idx_messages_conv_all on messages m  (cost=0.42..169.61 rows=50 width=14) (actual time=0.013..0.032 rows=140.00 loops=1)
+              Index Cond: (conversation_id = 1450)
+              Filter: (message_id <= 99000)
+              Index Searches: 1
+              Buffers: shared hit=86
+        ->  Index Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..8.20 rows=1 width=22) (actual time=0.001..0.001 rows=0.09 loops=140)
+              Index Cond: ((recipient_id = 1267) AND (message_id = m.message_id))
+              Filter: ((status)::text <> 'read'::text)
+              Index Searches: 140
+              Buffers: shared hit=432
+Planning:
+  Buffers: shared hit=369
+Planning Time: 0.617 ms
+Execution Time: 0.272 ms

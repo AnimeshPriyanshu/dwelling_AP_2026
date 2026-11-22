@@ -1,0 +1,50 @@
+-- Query 7.5: Single message with quoted reply preview
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.031 ms
+Nested Loop Left Join  (cost=0.84..16.88 rows=1 width=128) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=11
+  ->  Index Scan using messages_pkey on messages m  (cost=0.42..8.44 rows=1 width=88) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Index Cond: (message_id = 2889)
+        Index Searches: 1
+        Buffers: shared hit=7
+  ->  Index Scan using messages_pkey on messages r  (cost=0.42..8.44 rows=1 width=56) (actual time=0.001..0.001 rows=1.00 loops=1)
+        Index Cond: (message_id = m.reply_to_message_id)
+        Index Searches: 1
+        Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=282
+Planning Time: 0.428 ms
+Execution Time: 0.031 ms
+
+-- Run 2: 0.032 ms
+Nested Loop Left Join  (cost=0.84..16.88 rows=1 width=128) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=11
+  ->  Index Scan using messages_pkey on messages m  (cost=0.42..8.44 rows=1 width=88) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Index Cond: (message_id = 2889)
+        Index Searches: 1
+        Buffers: shared hit=7
+  ->  Index Scan using messages_pkey on messages r  (cost=0.42..8.44 rows=1 width=56) (actual time=0.001..0.001 rows=1.00 loops=1)
+        Index Cond: (message_id = m.reply_to_message_id)
+        Index Searches: 1
+        Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=279
+Planning Time: 0.417 ms
+Execution Time: 0.032 ms
+
+-- Run 3: 0.032 ms
+Nested Loop Left Join  (cost=0.84..16.88 rows=1 width=128) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=11
+  ->  Index Scan using messages_pkey on messages m  (cost=0.42..8.44 rows=1 width=88) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Index Cond: (message_id = 2889)
+        Index Searches: 1
+        Buffers: shared hit=7
+  ->  Index Scan using messages_pkey on messages r  (cost=0.42..8.44 rows=1 width=56) (actual time=0.001..0.001 rows=1.00 loops=1)
+        Index Cond: (message_id = m.reply_to_message_id)
+        Index Searches: 1
+        Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=279
+Planning Time: 0.416 ms
+Execution Time: 0.032 ms

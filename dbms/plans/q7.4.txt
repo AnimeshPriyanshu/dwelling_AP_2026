@@ -1,0 +1,74 @@
+-- Query 7.4: NEWER than a message (sync after reconnect / polling)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.313 ms
+Sort  (cost=253.02..253.12 rows=39 width=95) (actual time=0.284..0.287 rows=139.00 loops=1)
+  Sort Key: m.message_id
+  Sort Method: quicksort  Memory: 37kB
+  Buffers: shared hit=141
+  ->  Hash Join  (cost=82.70..251.99 rows=39 width=95) (actual time=0.232..0.262 rows=139.00 loops=1)
+        Hash Cond: (m.sender_id = u.user_id)
+        Buffers: shared hit=138
+        ->  Index Scan using idx_messages_conv_all on messages m  (cost=0.42..169.61 rows=39 width=80) (actual time=0.015..0.034 rows=139.00 loops=1)
+              Index Cond: (conversation_id = 1301)
+              Filter: (message_id > 78001)
+              Rows Removed by Filter: 1
+              Index Searches: 1
+              Buffers: shared hit=102
+        ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.210..0.210 rows=2000.00 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 147kB
+              Buffers: shared hit=36
+              ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.108 rows=2000.00 loops=1)
+                    Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=329
+Planning Time: 0.588 ms
+Execution Time: 0.313 ms
+
+-- Run 2: 0.310 ms
+Sort  (cost=253.02..253.12 rows=39 width=95) (actual time=0.280..0.283 rows=139.00 loops=1)
+  Sort Key: m.message_id
+  Sort Method: quicksort  Memory: 37kB
+  Buffers: shared hit=137
+  ->  Hash Join  (cost=82.70..251.99 rows=39 width=95) (actual time=0.228..0.259 rows=139.00 loops=1)
+        Hash Cond: (m.sender_id = u.user_id)
+        Buffers: shared hit=134
+        ->  Index Scan using idx_messages_conv_all on messages m  (cost=0.42..169.61 rows=39 width=80) (actual time=0.011..0.029 rows=139.00 loops=1)
+              Index Cond: (conversation_id = 1301)
+              Filter: (message_id > 78001)
+              Rows Removed by Filter: 1
+              Index Searches: 1
+              Buffers: shared hit=98
+        ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.211..0.212 rows=2000.00 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 147kB
+              Buffers: shared hit=36
+              ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.111 rows=2000.00 loops=1)
+                    Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=329
+Planning Time: 0.582 ms
+Execution Time: 0.310 ms
+
+-- Run 3: 0.313 ms
+Sort  (cost=253.02..253.12 rows=39 width=95) (actual time=0.283..0.286 rows=139.00 loops=1)
+  Sort Key: m.message_id
+  Sort Method: quicksort  Memory: 37kB
+  Buffers: shared hit=137
+  ->  Hash Join  (cost=82.70..251.99 rows=39 width=95) (actual time=0.230..0.261 rows=139.00 loops=1)
+        Hash Cond: (m.sender_id = u.user_id)
+        Buffers: shared hit=134
+        ->  Index Scan using idx_messages_conv_all on messages m  (cost=0.42..169.61 rows=39 width=80) (actual time=0.011..0.030 rows=139.00 loops=1)
+              Index Cond: (conversation_id = 1301)
+              Filter: (message_id > 78001)
+              Rows Removed by Filter: 1
+              Index Searches: 1
+              Buffers: shared hit=98
+        ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.213..0.213 rows=2000.00 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 147kB
+              Buffers: shared hit=36
+              ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.111 rows=2000.00 loops=1)
+                    Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=329
+Planning Time: 0.578 ms
+Execution Time: 0.313 ms

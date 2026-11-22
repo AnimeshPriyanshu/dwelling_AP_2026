@@ -1,0 +1,71 @@
+-- Query 8.7: Total unread count (app icon badge)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 16.102 ms
+Aggregate  (cost=4977.10..4977.11 rows=1 width=8) (actual time=16.074..16.074 rows=1.00 loops=1)
+  Buffers: shared hit=6536
+  ->  Hash Join  (cost=1073.91..4956.48 rows=8248 width=0) (actual time=8.804..15.903 rows=7855.00 loops=1)
+        Hash Cond: (m.message_id = r.message_id)
+        Buffers: shared hit=6536
+        ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=8) (actual time=0.003..7.755 rows=151935.00 loops=1)
+              Filter: (deleted_at IS NULL)
+              Rows Removed by Filter: 3065
+              Buffers: shared hit=1934
+        ->  Hash  (cost=968.66..968.66 rows=8420 width=8) (actual time=2.913..2.913 rows=8010.00 loops=1)
+              Buckets: 16384  Batches: 1  Memory Usage: 441kB
+              Buffers: shared hit=4602
+              ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..968.66 rows=8420 width=8) (actual time=0.013..2.523 rows=8010.00 loops=1)
+                    Index Cond: (recipient_id = 1267)
+                    Heap Fetches: 8911
+                    Index Searches: 1
+                    Buffers: shared hit=4602
+Planning:
+  Buffers: shared hit=362
+Planning Time: 0.600 ms
+Execution Time: 16.102 ms
+
+-- Run 2: 16.497 ms
+Aggregate  (cost=4977.10..4977.11 rows=1 width=8) (actual time=16.466..16.466 rows=1.00 loops=1)
+  Buffers: shared hit=6536
+  ->  Hash Join  (cost=1073.91..4956.48 rows=8248 width=0) (actual time=9.196..16.290 rows=7855.00 loops=1)
+        Hash Cond: (m.message_id = r.message_id)
+        Buffers: shared hit=6536
+        ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=8) (actual time=0.003..8.043 rows=151935.00 loops=1)
+              Filter: (deleted_at IS NULL)
+              Rows Removed by Filter: 3065
+              Buffers: shared hit=1934
+        ->  Hash  (cost=968.66..968.66 rows=8420 width=8) (actual time=2.823..2.824 rows=8010.00 loops=1)
+              Buckets: 16384  Batches: 1  Memory Usage: 441kB
+              Buffers: shared hit=4602
+              ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..968.66 rows=8420 width=8) (actual time=0.012..2.447 rows=8010.00 loops=1)
+                    Index Cond: (recipient_id = 1267)
+                    Heap Fetches: 8911
+                    Index Searches: 1
+                    Buffers: shared hit=4602
+Planning:
+  Buffers: shared hit=362
+Planning Time: 0.567 ms
+Execution Time: 16.497 ms
+
+-- Run 3: 15.744 ms
+Aggregate  (cost=4977.10..4977.11 rows=1 width=8) (actual time=15.714..15.715 rows=1.00 loops=1)
+  Buffers: shared hit=6536
+  ->  Hash Join  (cost=1073.91..4956.48 rows=8248 width=0) (actual time=8.727..15.545 rows=7855.00 loops=1)
+        Hash Cond: (m.message_id = r.message_id)
+        Buffers: shared hit=6536
+        ->  Seq Scan on messages m  (cost=0.00..3484.00 rows=151833 width=8) (actual time=0.003..7.669 rows=151935.00 loops=1)
+              Filter: (deleted_at IS NULL)
+              Rows Removed by Filter: 3065
+              Buffers: shared hit=1934
+        ->  Hash  (cost=968.66..968.66 rows=8420 width=8) (actual time=2.782..2.782 rows=8010.00 loops=1)
+              Buckets: 16384  Batches: 1  Memory Usage: 441kB
+              Buffers: shared hit=4602
+              ->  Index Only Scan using idx_receipts_recipient_unread on message_receipts r  (cost=0.42..968.66 rows=8420 width=8) (actual time=0.012..2.427 rows=8010.00 loops=1)
+                    Index Cond: (recipient_id = 1267)
+                    Heap Fetches: 8911
+                    Index Searches: 1
+                    Buffers: shared hit=4602
+Planning:
+  Buffers: shared hit=362
+Planning Time: 0.622 ms
+Execution Time: 15.744 ms

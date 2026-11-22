@@ -1,0 +1,158 @@
+-- Query 7.1: Send message: inserts the message, one receipt per other member, and bumps the conversation, atomically. Inserts nothing if the sender is not a member, or if the reply target belongs to another conversation.
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 1.856 ms
+CTE Scan on new_msg  (cost=25.04..25.06 rows=1 width=72) (actual time=0.665..0.666 rows=1.00 loops=1)
+  Storage: Memory  Maximum Storage: 17kB
+  Buffers: shared hit=63 dirtied=1
+  CTE new_msg
+    ->  Insert on messages  (cost=0.28..8.32 rows=1 width=88) (actual time=0.663..0.664 rows=1.00 loops=1)
+          Buffers: shared hit=63 dirtied=1
+          ->  Nested Loop Left Join  (cost=0.28..8.32 rows=1 width=88) (actual time=0.027..0.027 rows=1.00 loops=1)
+                Join Filter: NULL::boolean
+                Buffers: shared hit=22
+                ->  Index Only Scan using idx_conv_members_user on conversation_members cm  (cost=0.28..8.30 rows=1 width=16) (actual time=0.008..0.009 rows=1.00 loops=1)
+                      Index Cond: ((user_id = 188) AND (conversation_id = 1301))
+                      Heap Fetches: 1
+                      Index Searches: 1
+                      Buffers: shared hit=7
+                ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0.00 loops=1)
+                      One-Time Filter: false
+  CTE new_receipts
+    ->  Insert on message_receipts  (cost=0.28..8.39 rows=3 width=56) (actual time=0.151..0.190 rows=6.00 loops=1)
+          Buffers: shared hit=111
+          ->  Nested Loop  (cost=0.28..8.39 rows=3 width=56) (actual time=0.006..0.008 rows=6.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on new_msg nm  (cost=0.00..0.02 rows=1 width=24) (actual time=0.000..0.000 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Only Scan using conversation_members_pkey on conversation_members cm_1  (cost=0.28..8.34 rows=3 width=16) (actual time=0.004..0.006 rows=6.00 loops=1)
+                      Index Cond: (conversation_id = nm.conversation_id)
+                      Filter: (user_id <> nm.sender_id)
+                      Rows Removed by Filter: 1
+                      Heap Fetches: 7
+                      Index Searches: 1
+                      Buffers: shared hit=4
+  CTE touch
+    ->  Update on conversations c  (cost=0.28..8.33 rows=1 width=46) (actual time=0.451..0.452 rows=1.00 loops=1)
+          Buffers: shared hit=38
+          ->  Nested Loop  (cost=0.28..8.33 rows=1 width=46) (actual time=0.010..0.010 rows=1.00 loops=1)
+                Buffers: shared hit=3
+                ->  CTE Scan on new_msg nm_1  (cost=0.00..0.02 rows=1 width=40) (actual time=0.005..0.005 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..8.29 rows=1 width=14) (actual time=0.004..0.004 rows=1.00 loops=1)
+                      Index Cond: (conversation_id = nm_1.conversation_id)
+                      Index Searches: 1
+                      Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=423
+Planning Time: 0.770 ms
+Trigger for constraint messages_conversation_id_fkey on messages: time=0.094 calls=1
+Trigger for constraint messages_sender_id_fkey on messages: time=0.231 calls=1
+Trigger for constraint messages_reply_to_message_id_fkey on messages: time=0.002 calls=1
+Trigger for constraint message_receipts_message_id_fkey on message_receipts: time=0.077 calls=6
+Trigger for constraint message_receipts_recipient_id_fkey on message_receipts: time=0.078 calls=6
+Execution Time: 1.856 ms
+
+-- Run 2: 1.866 ms
+CTE Scan on new_msg  (cost=25.04..25.06 rows=1 width=72) (actual time=0.722..0.724 rows=1.00 loops=1)
+  Storage: Memory  Maximum Storage: 17kB
+  Buffers: shared hit=63 dirtied=1
+  CTE new_msg
+    ->  Insert on messages  (cost=0.28..8.32 rows=1 width=88) (actual time=0.721..0.721 rows=1.00 loops=1)
+          Buffers: shared hit=63 dirtied=1
+          ->  Nested Loop Left Join  (cost=0.28..8.32 rows=1 width=88) (actual time=0.029..0.030 rows=1.00 loops=1)
+                Join Filter: NULL::boolean
+                Buffers: shared hit=22
+                ->  Index Only Scan using idx_conv_members_user on conversation_members cm  (cost=0.28..8.30 rows=1 width=16) (actual time=0.008..0.009 rows=1.00 loops=1)
+                      Index Cond: ((user_id = 188) AND (conversation_id = 1301))
+                      Heap Fetches: 1
+                      Index Searches: 1
+                      Buffers: shared hit=7
+                ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0.00 loops=1)
+                      One-Time Filter: false
+  CTE new_receipts
+    ->  Insert on message_receipts  (cost=0.28..8.39 rows=3 width=56) (actual time=0.123..0.210 rows=6.00 loops=1)
+          Buffers: shared hit=111
+          ->  Nested Loop  (cost=0.28..8.39 rows=3 width=56) (actual time=0.005..0.007 rows=6.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on new_msg nm  (cost=0.00..0.02 rows=1 width=24) (actual time=0.000..0.000 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Only Scan using conversation_members_pkey on conversation_members cm_1  (cost=0.28..8.34 rows=3 width=16) (actual time=0.004..0.005 rows=6.00 loops=1)
+                      Index Cond: (conversation_id = nm.conversation_id)
+                      Filter: (user_id <> nm.sender_id)
+                      Rows Removed by Filter: 1
+                      Heap Fetches: 7
+                      Index Searches: 1
+                      Buffers: shared hit=4
+  CTE touch
+    ->  Update on conversations c  (cost=0.28..8.33 rows=1 width=46) (actual time=0.407..0.407 rows=1.00 loops=1)
+          Buffers: shared hit=40
+          ->  Nested Loop  (cost=0.28..8.33 rows=1 width=46) (actual time=0.015..0.015 rows=1.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on new_msg nm_1  (cost=0.00..0.02 rows=1 width=40) (actual time=0.005..0.006 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..8.29 rows=1 width=14) (actual time=0.008..0.008 rows=1.00 loops=1)
+                      Index Cond: (conversation_id = nm_1.conversation_id)
+                      Index Searches: 1
+                      Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=423
+Planning Time: 0.911 ms
+Trigger for constraint messages_conversation_id_fkey on messages: time=0.082 calls=1
+Trigger for constraint messages_sender_id_fkey on messages: time=0.228 calls=1
+Trigger for constraint messages_reply_to_message_id_fkey on messages: time=0.003 calls=1
+Trigger for constraint message_receipts_message_id_fkey on message_receipts: time=0.071 calls=6
+Trigger for constraint message_receipts_recipient_id_fkey on message_receipts: time=0.071 calls=6
+Execution Time: 1.866 ms
+
+-- Run 3: 1.667 ms
+CTE Scan on new_msg  (cost=25.04..25.06 rows=1 width=72) (actual time=0.657..0.659 rows=1.00 loops=1)
+  Storage: Memory  Maximum Storage: 17kB
+  Buffers: shared hit=62
+  CTE new_msg
+    ->  Insert on messages  (cost=0.28..8.32 rows=1 width=88) (actual time=0.656..0.657 rows=1.00 loops=1)
+          Buffers: shared hit=62
+          ->  Nested Loop Left Join  (cost=0.28..8.32 rows=1 width=88) (actual time=0.027..0.028 rows=1.00 loops=1)
+                Join Filter: NULL::boolean
+                Buffers: shared hit=22
+                ->  Index Only Scan using idx_conv_members_user on conversation_members cm  (cost=0.28..8.30 rows=1 width=16) (actual time=0.009..0.009 rows=1.00 loops=1)
+                      Index Cond: ((user_id = 188) AND (conversation_id = 1301))
+                      Heap Fetches: 1
+                      Index Searches: 1
+                      Buffers: shared hit=7
+                ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0.00 loops=1)
+                      One-Time Filter: false
+  CTE new_receipts
+    ->  Insert on message_receipts  (cost=0.28..8.39 rows=3 width=56) (actual time=0.111..0.142 rows=6.00 loops=1)
+          Buffers: shared hit=111
+          ->  Nested Loop  (cost=0.28..8.39 rows=3 width=56) (actual time=0.005..0.006 rows=6.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on new_msg nm  (cost=0.00..0.02 rows=1 width=24) (actual time=0.000..0.000 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Only Scan using conversation_members_pkey on conversation_members cm_1  (cost=0.28..8.34 rows=3 width=16) (actual time=0.004..0.004 rows=6.00 loops=1)
+                      Index Cond: (conversation_id = nm.conversation_id)
+                      Filter: (user_id <> nm.sender_id)
+                      Rows Removed by Filter: 1
+                      Heap Fetches: 7
+                      Index Searches: 1
+                      Buffers: shared hit=4
+  CTE touch
+    ->  Update on conversations c  (cost=0.28..8.33 rows=1 width=46) (actual time=0.389..0.389 rows=1.00 loops=1)
+          Buffers: shared hit=40
+          ->  Nested Loop  (cost=0.28..8.33 rows=1 width=46) (actual time=0.014..0.014 rows=1.00 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on new_msg nm_1  (cost=0.00..0.02 rows=1 width=40) (actual time=0.005..0.005 rows=1.00 loops=1)
+                      Storage: Memory  Maximum Storage: 17kB
+                ->  Index Scan using conversations_pkey on conversations c  (cost=0.28..8.29 rows=1 width=14) (actual time=0.008..0.008 rows=1.00 loops=1)
+                      Index Cond: (conversation_id = nm_1.conversation_id)
+                      Index Searches: 1
+                      Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=423
+Planning Time: 0.775 ms
+Trigger for constraint messages_conversation_id_fkey on messages: time=0.056 calls=1
+Trigger for constraint messages_sender_id_fkey on messages: time=0.203 calls=1
+Trigger for constraint messages_reply_to_message_id_fkey on messages: time=0.002 calls=1
+Trigger for constraint message_receipts_message_id_fkey on message_receipts: time=0.071 calls=6
+Trigger for constraint message_receipts_recipient_id_fkey on message_receipts: time=0.072 calls=6
+Execution Time: 1.667 ms

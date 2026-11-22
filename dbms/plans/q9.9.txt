@@ -1,0 +1,80 @@
+-- Query 9.9: Most blocked users (abuse signal)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.632 ms
+Limit  (cost=163.62..163.64 rows=10 width=31) (actual time=0.601..0.602 rows=10.00 loops=1)
+  Buffers: shared hit=48
+  ->  Sort  (cost=163.62..167.11 rows=1398 width=31) (actual time=0.601..0.601 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=48
+        ->  HashAggregate  (cost=119.43..133.41 rows=1398 width=31) (actual time=0.494..0.542 rows=1009.00 loops=1)
+              Group Key: b.blocked_contact_id, u.username
+              Batches: 1  Memory Usage: 121kB
+              Buffers: shared hit=45
+              ->  Hash Join  (cost=82.28..108.94 rows=1398 width=23) (actual time=0.228..0.357 rows=1398.00 loops=1)
+                    Hash Cond: (b.blocked_contact_id = u.user_id)
+                    Buffers: shared hit=45
+                    ->  Seq Scan on blocked_contacts b  (cost=0.00..22.98 rows=1398 width=8) (actual time=0.003..0.041 rows=1398.00 loops=1)
+                          Buffers: shared hit=9
+                    ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.220..0.220 rows=2000.00 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 147kB
+                          Buffers: shared hit=36
+                          ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.121 rows=2000.00 loops=1)
+                                Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=237
+Planning Time: 0.469 ms
+Execution Time: 0.632 ms
+
+-- Run 2: 0.629 ms
+Limit  (cost=163.62..163.64 rows=10 width=31) (actual time=0.599..0.600 rows=10.00 loops=1)
+  Buffers: shared hit=48
+  ->  Sort  (cost=163.62..167.11 rows=1398 width=31) (actual time=0.598..0.599 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=48
+        ->  HashAggregate  (cost=119.43..133.41 rows=1398 width=31) (actual time=0.487..0.536 rows=1009.00 loops=1)
+              Group Key: b.blocked_contact_id, u.username
+              Batches: 1  Memory Usage: 121kB
+              Buffers: shared hit=45
+              ->  Hash Join  (cost=82.28..108.94 rows=1398 width=23) (actual time=0.216..0.353 rows=1398.00 loops=1)
+                    Hash Cond: (b.blocked_contact_id = u.user_id)
+                    Buffers: shared hit=45
+                    ->  Seq Scan on blocked_contacts b  (cost=0.00..22.98 rows=1398 width=8) (actual time=0.003..0.038 rows=1398.00 loops=1)
+                          Buffers: shared hit=9
+                    ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.209..0.209 rows=2000.00 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 147kB
+                          Buffers: shared hit=36
+                          ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.109 rows=2000.00 loops=1)
+                                Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=237
+Planning Time: 0.461 ms
+Execution Time: 0.629 ms
+
+-- Run 3: 0.621 ms
+Limit  (cost=163.62..163.64 rows=10 width=31) (actual time=0.591..0.592 rows=10.00 loops=1)
+  Buffers: shared hit=48
+  ->  Sort  (cost=163.62..167.11 rows=1398 width=31) (actual time=0.591..0.591 rows=10.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=48
+        ->  HashAggregate  (cost=119.43..133.41 rows=1398 width=31) (actual time=0.483..0.530 rows=1009.00 loops=1)
+              Group Key: b.blocked_contact_id, u.username
+              Batches: 1  Memory Usage: 121kB
+              Buffers: shared hit=45
+              ->  Hash Join  (cost=82.28..108.94 rows=1398 width=23) (actual time=0.221..0.349 rows=1398.00 loops=1)
+                    Hash Cond: (b.blocked_contact_id = u.user_id)
+                    Buffers: shared hit=45
+                    ->  Seq Scan on blocked_contacts b  (cost=0.00..22.98 rows=1398 width=8) (actual time=0.003..0.040 rows=1398.00 loops=1)
+                          Buffers: shared hit=9
+                    ->  Hash  (cost=56.57..56.57 rows=2057 width=23) (actual time=0.212..0.213 rows=2000.00 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 147kB
+                          Buffers: shared hit=36
+                          ->  Seq Scan on users u  (cost=0.00..56.57 rows=2057 width=23) (actual time=0.002..0.110 rows=2000.00 loops=1)
+                                Buffers: shared hit=36
+Planning:
+  Buffers: shared hit=237
+Planning Time: 0.477 ms
+Execution Time: 0.621 ms

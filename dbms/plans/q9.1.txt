@@ -1,0 +1,56 @@
+-- Query 9.1: Messages per day, last 30 days
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 12.988 ms
+GroupAggregate  (cost=7990.86..8992.27 rows=44507 width=12) (actual time=11.171..12.966 rows=31.00 loops=1)
+  Group Key: ((date_trunc('day'::text, created_at))::date)
+  Buffers: shared hit=8382
+  ->  Sort  (cost=7990.86..8102.13 rows=44507 width=4) (actual time=11.123..11.924 rows=44229.00 loops=1)
+        Sort Key: ((date_trunc('day'::text, created_at))::date)
+        Sort Method: quicksort  Memory: 1537kB
+        Buffers: shared hit=8382
+        ->  Index Only Scan using idx_messages_conv_all on messages  (cost=0.42..4554.53 rows=44507 width=4) (actual time=0.036..9.673 rows=44229.00 loops=1)
+              Index Cond: (created_at >= (now() - '30 days'::interval))
+              Heap Fetches: 22676
+              Index Searches: 2
+              Buffers: shared hit=8379
+Planning:
+  Buffers: shared hit=189
+Planning Time: 0.346 ms
+Execution Time: 12.988 ms
+
+-- Run 2: 13.184 ms
+GroupAggregate  (cost=7990.86..8992.27 rows=44507 width=12) (actual time=11.389..13.162 rows=31.00 loops=1)
+  Group Key: ((date_trunc('day'::text, created_at))::date)
+  Buffers: shared hit=8382
+  ->  Sort  (cost=7990.86..8102.13 rows=44507 width=4) (actual time=11.336..12.120 rows=44229.00 loops=1)
+        Sort Key: ((date_trunc('day'::text, created_at))::date)
+        Sort Method: quicksort  Memory: 1537kB
+        Buffers: shared hit=8382
+        ->  Index Only Scan using idx_messages_conv_all on messages  (cost=0.42..4554.53 rows=44507 width=4) (actual time=0.035..9.882 rows=44229.00 loops=1)
+              Index Cond: (created_at >= (now() - '30 days'::interval))
+              Heap Fetches: 22676
+              Index Searches: 2
+              Buffers: shared hit=8379
+Planning:
+  Buffers: shared hit=189
+Planning Time: 0.325 ms
+Execution Time: 13.184 ms
+
+-- Run 3: 12.914 ms
+GroupAggregate  (cost=7990.86..8992.27 rows=44507 width=12) (actual time=11.134..12.891 rows=31.00 loops=1)
+  Group Key: ((date_trunc('day'::text, created_at))::date)
+  Buffers: shared hit=8382
+  ->  Sort  (cost=7990.86..8102.13 rows=44507 width=4) (actual time=11.085..11.867 rows=44229.00 loops=1)
+        Sort Key: ((date_trunc('day'::text, created_at))::date)
+        Sort Method: quicksort  Memory: 1537kB
+        Buffers: shared hit=8382
+        ->  Index Only Scan using idx_messages_conv_all on messages  (cost=0.42..4554.53 rows=44507 width=4) (actual time=0.036..9.626 rows=44229.00 loops=1)
+              Index Cond: (created_at >= (now() - '30 days'::interval))
+              Heap Fetches: 22676
+              Index Searches: 2
+              Buffers: shared hit=8379
+Planning:
+  Buffers: shared hit=189
+Planning Time: 0.335 ms
+Execution Time: 12.914 ms

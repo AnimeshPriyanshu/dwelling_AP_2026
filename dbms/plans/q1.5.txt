@@ -1,0 +1,50 @@
+-- Query 1.5: Get user by id (with profile)
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.031 ms
+Nested Loop Left Join  (cost=0.56..16.60 rows=1 width=148) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=9
+  ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=59) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=6
+  ->  Index Scan using user_profiles_pkey on user_profiles p  (cost=0.28..8.29 rows=1 width=97) (actual time=0.004..0.004 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=362
+Planning Time: 0.422 ms
+Execution Time: 0.031 ms
+
+-- Run 2: 0.034 ms
+Nested Loop Left Join  (cost=0.56..16.60 rows=1 width=148) (actual time=0.012..0.012 rows=1.00 loops=1)
+  Buffers: shared hit=9
+  ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=59) (actual time=0.006..0.006 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=6
+  ->  Index Scan using user_profiles_pkey on user_profiles p  (cost=0.28..8.29 rows=1 width=97) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=362
+Planning Time: 0.457 ms
+Execution Time: 0.034 ms
+
+-- Run 3: 0.031 ms
+Nested Loop Left Join  (cost=0.56..16.60 rows=1 width=148) (actual time=0.011..0.011 rows=1.00 loops=1)
+  Buffers: shared hit=9
+  ->  Index Scan using users_pkey on users u  (cost=0.28..8.30 rows=1 width=59) (actual time=0.005..0.006 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=6
+  ->  Index Scan using user_profiles_pkey on user_profiles p  (cost=0.28..8.29 rows=1 width=97) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (user_id = 1)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=362
+Planning Time: 0.417 ms
+Execution Time: 0.031 ms

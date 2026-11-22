@@ -1,0 +1,44 @@
+-- Query 3.4: Is X in my contacts?
+-- PostgreSQL 18.6, EXPLAIN (ANALYZE, BUFFERS), parameters bound
+
+-- Run 1: 0.046 ms
+Nested Loop Left Join  (cost=0.29..4.33 rows=1 width=1) (actual time=0.029..0.030 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.001 rows=1.00 loops=1)
+  ->  Index Only Scan using idx_contacts_contact_id on contacts c  (cost=0.29..4.31 rows=1 width=8) (actual time=0.028..0.029 rows=1.00 loops=1)
+        Index Cond: ((contact_id = 30) AND (user_id = 1))
+        Heap Fetches: 1
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=86
+Planning Time: 0.177 ms
+Execution Time: 0.046 ms
+
+-- Run 2: 0.049 ms
+Nested Loop Left Join  (cost=0.29..4.33 rows=1 width=1) (actual time=0.031..0.031 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+  ->  Index Only Scan using idx_contacts_contact_id on contacts c  (cost=0.29..4.31 rows=1 width=8) (actual time=0.030..0.030 rows=1.00 loops=1)
+        Index Cond: ((contact_id = 30) AND (user_id = 1))
+        Heap Fetches: 1
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=86
+Planning Time: 0.197 ms
+Execution Time: 0.049 ms
+
+-- Run 3: 0.049 ms
+Nested Loop Left Join  (cost=0.29..4.33 rows=1 width=1) (actual time=0.032..0.032 rows=1.00 loops=1)
+  Buffers: shared hit=7
+  ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1.00 loops=1)
+  ->  Index Only Scan using idx_contacts_contact_id on contacts c  (cost=0.29..4.31 rows=1 width=8) (actual time=0.031..0.031 rows=1.00 loops=1)
+        Index Cond: ((contact_id = 30) AND (user_id = 1))
+        Heap Fetches: 1
+        Index Searches: 1
+        Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=86
+Planning Time: 0.201 ms
+Execution Time: 0.049 ms
